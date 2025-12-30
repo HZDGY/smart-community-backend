@@ -1,0 +1,13 @@
+package generator.service;
+
+import generator.domain.SysLoginLog;
+import com.baomidou.mybatisplus.extension.service.IService;
+
+/**
+* @author 吴展德
+* @description 针对表【sys_login_log(登录日志表)】的数据库操作Service
+* @createDate 2025-12-30 10:46:05
+*/
+public interface SysLoginLogService extends IService<SysLoginLog> {
+
+}
