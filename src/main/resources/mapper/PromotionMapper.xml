@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sc.smartcommunitybackend.mapper.PromotionMapper">
+
+    <resultMap id="BaseResultMap" type="org.sc.smartcommunitybackend.domain.Promotion">
+            <id property="promotion_id" column="promotion_id" />
+            <result property="promotion_name" column="promotion_name" />
+            <result property="promotion_type" column="promotion_type" />
+            <result property="start_time" column="start_time" />
+            <result property="end_time" column="end_time" />
+            <result property="status" column="status" />
+            <result property="create_time" column="create_time" />
+            <result property="update_time" column="update_time" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        promotion_id,promotion_name,promotion_type,start_time,end_time,status,
+        create_time,update_time
+    </sql>
+</mapper>

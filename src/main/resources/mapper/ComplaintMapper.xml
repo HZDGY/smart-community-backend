@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sc.smartcommunitybackend.mapper.ComplaintMapper">
+
+    <resultMap id="BaseResultMap" type="org.sc.smartcommunitybackend.domain.Complaint">
+            <id property="complaint_id" column="complaint_id" />
+            <result property="user_id" column="user_id" />
+            <result property="complaint_type" column="complaint_type" />
+            <result property="description" column="description" />
+            <result property="status" column="status" />
+            <result property="create_time" column="create_time" />
+            <result property="handle_time" column="handle_time" />
+            <result property="handle_user_id" column="handle_user_id" />
+            <result property="handle_result" column="handle_result" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        complaint_id,user_id,complaint_type,description,status,create_time,
+        handle_time,handle_user_id,handle_result
+    </sql>
+</mapper>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sc.smartcommunitybackend.mapper.OrderMapper">
+
+    <resultMap id="BaseResultMap" type="org.sc.smartcommunitybackend.domain.Order">
+            <id property="order_id" column="order_id" />
+            <result property="order_no" column="order_no" />
+            <result property="user_id" column="user_id" />
+            <result property="total_amount" column="total_amount" />
+            <result property="order_status" column="order_status" />
+            <result property="store_id" column="store_id" />
+            <result property="create_time" column="create_time" />
+            <result property="pay_time" column="pay_time" />
+            <result property="finish_time" column="finish_time" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        order_id,order_no,user_id,total_amount,order_status,store_id,
+        create_time,pay_time,finish_time
+    </sql>
+</mapper>

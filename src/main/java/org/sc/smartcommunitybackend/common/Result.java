@@ -1,5 +1,6 @@
 package org.sc.smartcommunitybackend.common;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,6 +15,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(description = "统一响应结果")
 public class Result<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -21,21 +23,25 @@ public class Result<T> implements Serializable {
     /**
      * 响应码
      */
+    @Schema(description = "响应码", example = "200")
     private Integer code;
 
     /**
      * 响应消息
      */
+    @Schema(description = "响应消息", example = "操作成功")
     private String message;
 
     /**
      * 响应数据
      */
+    @Schema(description = "响应数据")
     private T data;
 
     /**
      * 时间戳
      */
+    @Schema(description = "时间戳", example = "1640995200000")
     private Long timestamp;
 
     /**

@@ -1,5 +1,6 @@
 package org.sc.smartcommunitybackend.exception;
 
+import lombok.Getter;
 import org.sc.smartcommunitybackend.common.ResultCode;
 
 /**
@@ -12,6 +13,7 @@ public class BusinessException extends RuntimeException {
     /**
      * 错误码
      */
+    @Getter
     private Integer code;
 
     /**
@@ -45,10 +47,6 @@ public class BusinessException extends RuntimeException {
         super(message, cause);
         this.message = message;
         this.code = ResultCode.BUSINESS_ERROR.getCode();
-    }
-
-    public Integer getCode() {
-        return code;
     }
 
     @Override

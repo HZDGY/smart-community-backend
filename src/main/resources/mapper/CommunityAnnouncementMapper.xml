@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.sc.smartcommunitybackend.mapper.CommunityAnnouncementMapper">
+
+    <resultMap id="BaseResultMap" type="org.sc.smartcommunitybackend.domain.CommunityAnnouncement">
+            <id property="announce_id" column="announce_id" />
+            <result property="title" column="title" />
+            <result property="content" column="content" />
+            <result property="publish_user_id" column="publish_user_id" />
+            <result property="publish_time" column="publish_time" />
+            <result property="read_count" column="read_count" />
+    </resultMap>
+
+    <sql id="Base_Column_List">
+        announce_id,title,content,publish_user_id,publish_time,read_count
+    </sql>
+</mapper>
