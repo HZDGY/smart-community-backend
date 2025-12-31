@@ -2,6 +2,7 @@ package org.sc.smartcommunitybackend.config;
 
 import org.sc.smartcommunitybackend.interceptor.JwtAuthInterceptor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -16,12 +17,14 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Autowired
     private JwtAuthInterceptor jwtAuthInterceptor;
-
+    @Value("${app.interceptor.enabled:true}")
+    private boolean interceptorEnabled;
     /**
      * 配置拦截器
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        if (interceptorEnabled) {
         registry.addInterceptor(jwtAuthInterceptor)
                 // 拦截所有请求
                 .addPathPatterns("/**")
@@ -54,7 +57,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/actuator/**",
                         "/error"
                 );
-    }
+    }}
 
     /**
      * 配置静态资源映射
