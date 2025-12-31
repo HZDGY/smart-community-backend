@@ -15,7 +15,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Schema(description = "统一响应结果")
+@Schema(description = "统一响应")
 public class Result<T> implements Serializable {
 
     private static final long serialVersionUID = 1L;

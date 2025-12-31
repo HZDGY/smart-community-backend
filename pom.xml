@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.9</version>
+        <version>3.2.3</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>org.sc</groupId>
@@ -29,6 +29,12 @@
     <properties>
         <java.version>17</java.version>
     </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- 统一管理 SpringDoc 版本，确保与 Spring Boot 3.5.9 兼容 -->
+        </dependencies>
+    </dependencyManagement>
     <dependencies>
         <!-- Spring Boot Web -->
         <dependency>
@@ -68,19 +74,26 @@
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
             <version>3.5.11</version>
         </dependency>
-        <!-- MyBatis-Plus JSQLParser (3.5.9版本需要单独引入) -->
+        <!-- MyBatis-Plus JSQLParser (3.5.11版本需要单独引入) -->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-jsqlparser</artifactId>
-            <version>3.5.9</version>
+            <version>3.5.11</version>
         </dependency>
 
-        <!-- SpringDoc OpenAPI (Swagger 3.x) -->
+        <!-- Knife4j (基于 OpenAPI 3) - 兼容 Spring Boot 3.5.9 -->
         <dependency>
-            <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
+            <groupId>com.github.xiaoymin</groupId>
+            <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+            <version>4.5.0</version>
         </dependency>
+
+        <!-- 显式引入兼容的 SpringDoc 版本 -->
+<!--        <dependency>-->
+<!--            <groupId>org.springdoc</groupId>-->
+<!--            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>-->
+<!--            <version>2.7.0</version>-->
+<!--        </dependency>-->
 
         <!-- Spring Boot Test -->
         <dependency>

@@ -11,13 +11,13 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 /**
- * Swagger/OpenAPI 配置类
+ * Knife4j/OpenAPI 配置类
  */
 @Configuration
 public class SwaggerConfig {
 
     /**
-     * 配置OpenAPI信息
+     * 配置OpenAPI信息（Knife4j基于OpenAPI 3）
      */
     @Bean
     public OpenAPI customOpenAPI() {
@@ -25,7 +25,7 @@ public class SwaggerConfig {
                 .info(new Info()
                         .title("智能社区后端API文档")
                         .version("1.0.0")
-                        .description("智能社区后端系统API接口文档，基于Spring Boot 3.x和SpringDoc OpenAPI")
+                        .description("智能社区后端系统API接口文档，基于Spring Boot 3.x和Knife4j")
                         .contact(new Contact()
                                 .name("开发团队")
                                 .email("2870959239@qq.com")
