@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
@@ -73,6 +74,16 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
         logger.warn("参数校验异常: {}", message);
         return Result.error(ResultCode.PARAM_ERROR.getCode(), message);
+    }
+
+    /**
+     * 处理静态资源找不到异常（不打印错误日志，避免干扰）
+     */
+    @ExceptionHandler(NoResourceFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public void handleNoResourceFoundException(NoResourceFoundException e) {
+        // 静态资源找不到，不做处理，让Spring处理404
+        logger.debug("静态资源未找到: {}", e.getResourcePath());
     }
 
     /**

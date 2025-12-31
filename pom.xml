@@ -29,14 +29,40 @@
     <properties>
         <java.version>17</java.version>
     </properties>
+
+    <!-- 配置Maven仓库 -->
+    <repositories>
+        <repository>
+            <id>aliyunmaven</id>
+            <name>阿里云公共仓库</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </repository>
+        <repository>
+            <id>central</id>
+            <name>Maven Central</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>nexus-maven</id>
+            <name>nexus-maven</name>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </repository>
+    </repositories>
+    
+    <pluginRepositories>
+        <pluginRepository>
+            <id>aliyunmaven</id>
+            <name>阿里云插件仓库</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </pluginRepository>
+    </pluginRepositories>
     
     <dependencyManagement>
         <dependencies>
-            <!-- 使用 Knife4j 依赖管理 -->
             <dependency>
                 <groupId>com.github.xiaoymin</groupId>
                 <artifactId>knife4j-dependencies</artifactId>
-                <version>4.5.0</version>
+                <version>4.4.0</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -72,6 +98,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
             <optional>true</optional>
         </dependency>
 
@@ -81,6 +108,7 @@
             <artifactId>mybatis-plus-spring-boot3-starter</artifactId>
             <version>3.5.11</version>
         </dependency>
+        
         <!-- MyBatis-Plus JSQLParser (3.5.11版本需要单独引入) -->
         <dependency>
             <groupId>com.baomidou</groupId>
@@ -88,10 +116,42 @@
             <version>3.5.11</version>
         </dependency>
 
-        <!-- Knife4j (基于 OpenAPI 3) - 兼容 Spring Boot 3.x -->
+        <!-- Knife4j (基于 OpenAPI 3) - 版本由 knife4j-dependencies BOM 管理 -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
+        </dependency>
+
+        <!-- Gson -->
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+        </dependency>
+
+<!--         Hutool 工具类库-->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>5.8.10</version>
+        </dependency>
+
+        <!-- JWT -->
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.12.3</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.12.3</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId>
+            <version>0.12.3</version>
+            <scope>runtime</scope>
         </dependency>
 
         <!-- Spring Boot Test -->

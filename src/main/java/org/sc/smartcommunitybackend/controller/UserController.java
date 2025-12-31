@@ -7,11 +7,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.sc.smartcommunitybackend.common.Result;
+import org.sc.smartcommunitybackend.dto.request.UserLoginRequest;
 import org.sc.smartcommunitybackend.dto.request.UserRegisterRequest;
+import org.sc.smartcommunitybackend.dto.response.FileUploadResponse;
+import org.sc.smartcommunitybackend.dto.response.UserLoginResponse;
 import org.sc.smartcommunitybackend.dto.response.UserRegisterResponse;
 import org.sc.smartcommunitybackend.service.SysUserService;
+import org.sc.smartcommunitybackend.util.FileUploadUtil;
+import org.sc.smartcommunitybackend.util.JwtUtil;
+import org.sc.smartcommunitybackend.util.UserContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 用户控制器
@@ -23,6 +30,12 @@ public class UserController extends BaseController {
 
     @Autowired
     private SysUserService sysUserService;
+
+    @Autowired
+    private FileUploadUtil fileUploadUtil;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @PostMapping("/register")
     @Operation(summary = "用户注册", description = "任何具有中国公民资格的人员都可以通过此接口进行注册")
@@ -36,6 +49,87 @@ public class UserController extends BaseController {
             @RequestBody @Valid UserRegisterRequest request) {
         UserRegisterResponse response = sysUserService.register(request);
         return success("注册成功", response);
+    }
+
+    @PostMapping("/login")
+    @Operation(summary = "用户登录", description = "使用手机号和密码进行登录，返回用户信息和JWT令牌")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "登录成功"),
+            @ApiResponse(responseCode = "400", description = "参数错误"),
+            @ApiResponse(responseCode = "600", description = "业务异常（如用户不存在、密码错误、账号被冻结）")
+    })
+    public Result<UserLoginResponse> login(
+            @Parameter(description = "用户登录信息", required = true)
+            @RequestBody @Valid UserLoginRequest request) {
+        UserLoginResponse response = sysUserService.login(request);
+        return success("登录成功", response);
+    }
+
+    @PostMapping("/avatar/upload")
+    @Operation(summary = "上传头像", description = "用户上传头像图片，返回头像URL。需要在请求头中携带JWT令牌")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "上传成功"),
+            @ApiResponse(responseCode = "400", description = "参数错误或文件格式不支持"),
+            @ApiResponse(responseCode = "401", description = "未授权（token无效或过期）"),
+            @ApiResponse(responseCode = "600", description = "业务异常")
+    })
+    public Result<FileUploadResponse> uploadAvatar(
+            @Parameter(description = "头像图片文件（支持jpg、png、gif等格式，大小不超过10MB）", required = true)
+            @RequestParam("file") MultipartFile file) {
+        
+        // 1. 从上下文获取当前登录用户ID（已通过拦截器验证）
+        Long userId = UserContextUtil.getCurrentUserId();
+        
+        // 2. 上传文件到服务器
+        String avatarUrl = fileUploadUtil.uploadFile(file, "avatar");
+        
+        // 3. 更新用户头像URL
+        boolean updated = sysUserService.updateAvatar(userId, avatarUrl);
+        if (!updated) {
+            return error("头像更新失败");
+        }
+        
+        // 4. 构建响应
+        FileUploadResponse response = FileUploadResponse.builder()
+                .url(avatarUrl)
+                .originalFilename(file.getOriginalFilename())
+                .size(file.getSize())
+                .contentType(file.getContentType())
+                .build();
+        
+        return success("头像上传成功", response);
+    }
+
+    @GetMapping("/info")
+    @Operation(summary = "获取当前用户信息", description = "获取当前登录用户的详细信息")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "获取成功"),
+            @ApiResponse(responseCode = "401", description = "未授权（token无效或过期）")
+    })
+    public Result<UserLoginResponse> getCurrentUserInfo() {
+        // 从上下文获取当前登录用户ID
+        Long userId = UserContextUtil.getCurrentUserId();
+        
+        // 查询用户信息
+        var user = sysUserService.getById(userId);
+        if (user == null) {
+            return error("用户不存在");
+        }
+        
+        // 构建响应
+        UserLoginResponse response = UserLoginResponse.builder()
+                .userId(user.getUser_id())
+                .userName(user.getUser_name())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .avatar(user.getAvatar())
+                .gender(user.getGender())
+                .age(user.getAge())
+                .userType(user.getUser_type())
+                .status(user.getStatus())
+                .build();
+        
+        return success("获取成功", response);
     }
 }
 

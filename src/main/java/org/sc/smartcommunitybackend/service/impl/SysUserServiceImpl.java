@@ -4,13 +4,16 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.sc.smartcommunitybackend.constant.UserConstant;
 import org.sc.smartcommunitybackend.domain.SysUser;
+import org.sc.smartcommunitybackend.dto.request.UserLoginRequest;
 import org.sc.smartcommunitybackend.dto.request.UserRegisterRequest;
+import org.sc.smartcommunitybackend.dto.response.UserLoginResponse;
 import org.sc.smartcommunitybackend.dto.response.UserRegisterResponse;
 import org.sc.smartcommunitybackend.exception.BusinessException;
 import org.sc.smartcommunitybackend.service.SysUserService;
 import org.sc.smartcommunitybackend.mapper.SysUserMapper;
+import org.sc.smartcommunitybackend.util.JwtUtil;
 import org.sc.smartcommunitybackend.util.PasswordUtil;
-import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,9 @@ import java.util.Date;
 @Service
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     implements SysUserService{
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -74,10 +80,61 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     }
 
     @Override
+    public UserLoginResponse login(UserLoginRequest request) {
+        // 1. 根据手机号查询用户
+        SysUser user = getByPhone(request.getPhone());
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        // 2. 验证密码
+        String encryptedPassword = PasswordUtil.encrypt(request.getPassword());
+        if (!encryptedPassword.equals(user.getPassword())) {
+            throw new BusinessException("密码错误");
+        }
+
+        // 3. 检查用户状态
+        if (user.getStatus() != UserConstant.STATUS_NORMAL) {
+            throw new BusinessException("账号已被冻结，请联系管理员");
+        }
+
+        // 4. 生成JWT Token
+        String token = jwtUtil.generateToken(user.getUser_id(), user.getPhone());
+
+        // 5. 构建响应对象
+        UserLoginResponse response = UserLoginResponse.builder()
+                .token(token)
+                .tokenType("Bearer")
+                .userId(user.getUser_id())
+                .userName(user.getUser_name())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .avatar(user.getAvatar())
+                .gender(user.getGender())
+                .age(user.getAge())
+                .userType(user.getUser_type())
+                .status(user.getStatus())
+                .build();
+
+        return response;
+    }
+
+    @Override
     public SysUser getByPhone(String phone) {
         LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SysUser::getPhone, phone);
         return getOne(queryWrapper);
+    }
+
+    @Override
+    public boolean updateAvatar(Long userId, String avatarUrl) {
+        SysUser user = getById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+        user.setAvatar(avatarUrl);
+        user.setUpdate_time(new Date());
+        return updateById(user);
     }
 }
 
