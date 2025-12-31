@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.sc.smartcommunitybackend.constant.UserConstant;
 import org.sc.smartcommunitybackend.domain.SysUser;
-import org.sc.smartcommunitybackend.dto.request.UserLoginRequest;
-import org.sc.smartcommunitybackend.dto.request.UserRegisterRequest;
+import org.sc.smartcommunitybackend.dto.request.*;
 import org.sc.smartcommunitybackend.dto.response.UserLoginResponse;
+import org.sc.smartcommunitybackend.dto.response.UserProfileResponse;
 import org.sc.smartcommunitybackend.dto.response.UserRegisterResponse;
 import org.sc.smartcommunitybackend.exception.BusinessException;
 import org.sc.smartcommunitybackend.service.SysUserService;
@@ -14,6 +14,7 @@ import org.sc.smartcommunitybackend.mapper.SysUserMapper;
 import org.sc.smartcommunitybackend.util.JwtUtil;
 import org.sc.smartcommunitybackend.util.PasswordUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,6 +31,12 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    /**
+     * 验证码（简化处理，实际项目中应该从Redis或短信服务获取）
+     */
+    @Value("${app.default-verify-code:123456}")
+    private String defaultVerifyCode;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -135,6 +142,123 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         user.setAvatar(avatarUrl);
         user.setUpdate_time(new Date());
         return updateById(user);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean forgotPassword(ForgotPasswordRequest request) {
+        // 1. 验证两次密码是否一致
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new BusinessException("两次密码输入不一致");
+        }
+
+        // 2. 验证验证码（简化处理，实际项目中应该验证短信验证码）
+        if (!defaultVerifyCode.equals(request.getVerifyCode())) {
+            throw new BusinessException("验证码错误");
+        }
+
+        // 3. 查询用户是否存在
+        SysUser user = getByPhone(request.getPhone());
+        if (user == null) {
+            throw new BusinessException("该手机号未注册");
+        }
+
+        // 4. 更新密码
+        user.setPassword(PasswordUtil.encrypt(request.getNewPassword()));
+        user.setUpdate_time(new Date());
+        return updateById(user);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public boolean changePassword(Long userId, ChangePasswordRequest request) {
+        // 1. 验证两次密码是否一致
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new BusinessException("两次密码输入不一致");
+        }
+
+        // 2. 查询用户
+        SysUser user = getById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        // 3. 验证旧密码
+        String oldPasswordEncrypted = PasswordUtil.encrypt(request.getOldPassword());
+        if (!oldPasswordEncrypted.equals(user.getPassword())) {
+            throw new BusinessException("旧密码错误");
+        }
+
+        // 4. 验证新密码不能与旧密码相同
+        if (request.getOldPassword().equals(request.getNewPassword())) {
+            throw new BusinessException("新密码不能与旧密码相同");
+        }
+
+        // 5. 更新密码
+        user.setPassword(PasswordUtil.encrypt(request.getNewPassword()));
+        user.setUpdate_time(new Date());
+        return updateById(user);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UserProfileResponse updateProfile(Long userId, UpdateProfileRequest request) {
+        // 1. 查询用户
+        SysUser user = getById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        // 2. 更新用户信息（只更新非空字段）
+        boolean updated = false;
+        if (request.getUserName() != null && !request.getUserName().isEmpty()) {
+            user.setUser_name(request.getUserName());
+            updated = true;
+        }
+        if (request.getEmail() != null && !request.getEmail().isEmpty()) {
+            user.setEmail(request.getEmail());
+            updated = true;
+        }
+        if (request.getGender() != null) {
+            user.setGender(request.getGender());
+            updated = true;
+        }
+        if (request.getAge() != null) {
+            user.setAge(request.getAge());
+            updated = true;
+        }
+
+        if (updated) {
+            user.setUpdate_time(new Date());
+            if (!updateById(user)) {
+                throw new BusinessException("更新个人资料失败");
+            }
+        }
+
+        // 3. 返回更新后的用户资料
+        return getProfile(userId);
+    }
+
+    @Override
+    public UserProfileResponse getProfile(Long userId) {
+        SysUser user = getById(userId);
+        if (user == null) {
+            throw new BusinessException("用户不存在");
+        }
+
+        return UserProfileResponse.builder()
+                .userId(user.getUser_id())
+                .userName(user.getUser_name())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .avatar(user.getAvatar())
+                .gender(user.getGender())
+                .age(user.getAge())
+                .userType(user.getUser_type())
+                .status(user.getStatus())
+                .createTime(user.getCreate_time())
+                .updateTime(user.getUpdate_time())
+                .build();
     }
 }
 

@@ -1,9 +1,9 @@
 package org.sc.smartcommunitybackend.service;
 
 import org.sc.smartcommunitybackend.domain.SysUser;
-import org.sc.smartcommunitybackend.dto.request.UserLoginRequest;
-import org.sc.smartcommunitybackend.dto.request.UserRegisterRequest;
+import org.sc.smartcommunitybackend.dto.request.*;
 import org.sc.smartcommunitybackend.dto.response.UserLoginResponse;
+import org.sc.smartcommunitybackend.dto.response.UserProfileResponse;
 import org.sc.smartcommunitybackend.dto.response.UserRegisterResponse;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -46,4 +46,38 @@ public interface SysUserService extends IService<SysUser> {
      * @return 是否更新成功
      */
     boolean updateAvatar(Long userId, String avatarUrl);
+
+    /**
+     * 忘记密码（通过验证码重置密码）
+     *
+     * @param request 忘记密码请求
+     * @return 是否重置成功
+     */
+    boolean forgotPassword(ForgotPasswordRequest request);
+
+    /**
+     * 修改密码（需要验证旧密码）
+     *
+     * @param userId 用户ID
+     * @param request 修改密码请求
+     * @return 是否修改成功
+     */
+    boolean changePassword(Long userId, ChangePasswordRequest request);
+
+    /**
+     * 更新个人资料
+     *
+     * @param userId 用户ID
+     * @param request 更新资料请求
+     * @return 用户资料
+     */
+    UserProfileResponse updateProfile(Long userId, UpdateProfileRequest request);
+
+    /**
+     * 获取用户资料
+     *
+     * @param userId 用户ID
+     * @return 用户资料
+     */
+    UserProfileResponse getProfile(Long userId);
 }

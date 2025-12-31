@@ -7,10 +7,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.sc.smartcommunitybackend.common.Result;
-import org.sc.smartcommunitybackend.dto.request.UserLoginRequest;
-import org.sc.smartcommunitybackend.dto.request.UserRegisterRequest;
+import org.sc.smartcommunitybackend.dto.request.*;
 import org.sc.smartcommunitybackend.dto.response.FileUploadResponse;
 import org.sc.smartcommunitybackend.dto.response.UserLoginResponse;
+import org.sc.smartcommunitybackend.dto.response.UserProfileResponse;
 import org.sc.smartcommunitybackend.dto.response.UserRegisterResponse;
 import org.sc.smartcommunitybackend.service.SysUserService;
 import org.sc.smartcommunitybackend.util.FileUploadUtil;
@@ -130,6 +130,64 @@ public class UserController extends BaseController {
                 .build();
         
         return success("获取成功", response);
+    }
+
+    @PostMapping("/forgot-password")
+    @Operation(summary = "忘记密码", description = "通过手机号和验证码重置密码（验证码默认为123456）")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "重置成功"),
+            @ApiResponse(responseCode = "400", description = "参数错误"),
+            @ApiResponse(responseCode = "600", description = "业务异常（如验证码错误、手机号未注册）")
+    })
+    public Result<Void> forgotPassword(
+            @Parameter(description = "忘记密码请求", required = true)
+            @RequestBody @Valid ForgotPasswordRequest request) {
+        sysUserService.forgotPassword(request);
+        return success();
+    }
+
+    @PostMapping("/change-password")
+    @Operation(summary = "修改密码", description = "修改当前登录用户的密码（需要验证旧密码）")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "修改成功"),
+            @ApiResponse(responseCode = "400", description = "参数错误"),
+            @ApiResponse(responseCode = "401", description = "未授权（token无效或过期）"),
+            @ApiResponse(responseCode = "600", description = "业务异常（如旧密码错误）")
+    })
+    public Result<Void> changePassword(
+            @Parameter(description = "修改密码请求", required = true)
+            @RequestBody @Valid ChangePasswordRequest request) {
+        Long userId = UserContextUtil.getCurrentUserId();
+        sysUserService.changePassword(userId, request);
+        return success();
+    }
+
+    @GetMapping("/profile")
+    @Operation(summary = "获取个人资料", description = "获取当前登录用户的个人资料")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "获取成功"),
+            @ApiResponse(responseCode = "401", description = "未授权（token无效或过期）")
+    })
+    public Result<UserProfileResponse> getProfile() {
+        Long userId = UserContextUtil.getCurrentUserId();
+        UserProfileResponse profile = sysUserService.getProfile(userId);
+        return success("获取成功", profile);
+    }
+
+    @PutMapping("/profile")
+    @Operation(summary = "更新个人资料", description = "更新当前登录用户的个人资料（只更新非空字段）")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "更新成功"),
+            @ApiResponse(responseCode = "400", description = "参数错误"),
+            @ApiResponse(responseCode = "401", description = "未授权（token无效或过期）"),
+            @ApiResponse(responseCode = "600", description = "业务异常")
+    })
+    public Result<UserProfileResponse> updateProfile(
+            @Parameter(description = "更新个人资料请求", required = true)
+            @RequestBody @Valid UpdateProfileRequest request) {
+        Long userId = UserContextUtil.getCurrentUserId();
+        UserProfileResponse profile = sysUserService.updateProfile(userId, request);
+        return success("更新成功", profile);
     }
 }
 
