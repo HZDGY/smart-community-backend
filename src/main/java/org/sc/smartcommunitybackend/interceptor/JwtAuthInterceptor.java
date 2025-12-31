@@ -71,9 +71,12 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     private String getTokenFromRequest(HttpServletRequest request) {
         // 1. 优先从Authorization header中获取
         String authHeader = request.getHeader("Authorization");
+        System.out.println("authHeader: " + authHeader);
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            System.out.println(authHeader.substring(7));
             return authHeader.substring(7); // 移除 "Bearer " 前缀
         }
+        System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1");
 
         // 2. 从请求参数中获取
         String token = request.getParameter("token");

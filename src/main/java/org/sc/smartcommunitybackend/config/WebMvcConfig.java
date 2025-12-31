@@ -27,10 +27,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 // 排除不需要认证的路径
                 .excludePathPatterns(
-                        // 用户注册、登录和忘记密码
+                        // 用户注册、登录、忘记密码和发送验证码
                         "/api/user/register",
                         "/api/user/login",
                         "/api/user/forgot-password",
+                        "/api/user/send-verify-code",
                         
                         // Knife4j文档相关
                         "/doc.html",
