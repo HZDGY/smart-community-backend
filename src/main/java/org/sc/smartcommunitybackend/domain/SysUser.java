@@ -51,6 +51,11 @@ public class SysUser {
     private Integer gender;
 
     /**
+     * 年龄
+     */
+    private Integer age;
+
+    /**
      * 用户类型 1-普通用户 2-商户管理员 3-社区管理员
      */
     private Integer user_type;

@@ -29,10 +29,17 @@
     <properties>
         <java.version>17</java.version>
     </properties>
-
+    
     <dependencyManagement>
         <dependencies>
-            <!-- 统一管理 SpringDoc 版本，确保与 Spring Boot 3.5.9 兼容 -->
+            <!-- 使用 Knife4j 依赖管理 -->
+            <dependency>
+                <groupId>com.github.xiaoymin</groupId>
+                <artifactId>knife4j-dependencies</artifactId>
+                <version>4.5.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
     <dependencies>
@@ -81,19 +88,11 @@
             <version>3.5.11</version>
         </dependency>
 
-        <!-- Knife4j (基于 OpenAPI 3) - 兼容 Spring Boot 3.5.9 -->
+        <!-- Knife4j (基于 OpenAPI 3) - 兼容 Spring Boot 3.x -->
         <dependency>
             <groupId>com.github.xiaoymin</groupId>
             <artifactId>knife4j-openapi3-jakarta-spring-boot-starter</artifactId>
-            <version>4.5.0</version>
         </dependency>
-
-        <!-- 显式引入兼容的 SpringDoc 版本 -->
-<!--        <dependency>-->
-<!--            <groupId>org.springdoc</groupId>-->
-<!--            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>-->
-<!--            <version>2.7.0</version>-->
-<!--        </dependency>-->
 
         <!-- Spring Boot Test -->
         <dependency>
