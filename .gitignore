@@ -4,7 +4,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
-# 配置文件
+# 配置文件阿
 application.properties
 application-dev.properties
 application-prod.properties

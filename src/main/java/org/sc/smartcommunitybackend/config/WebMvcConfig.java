@@ -10,7 +10,7 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Web MVC 配置
+ * Web MVC 配置，
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
