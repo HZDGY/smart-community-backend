@@ -10,60 +10,65 @@ import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /**
- * Web MVC 配置，
+ * Web MVC 配置
  */
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
     @Autowired
     private JwtAuthInterceptor jwtAuthInterceptor;
+    
     @Value("${app.interceptor.enabled:true}")
     private boolean interceptorEnabled;
+    
+    @Value("${file.upload.path}")
+    private String uploadPath;
     /**
      * 配置拦截器
      */
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         if (interceptorEnabled) {
-        registry.addInterceptor(jwtAuthInterceptor)
-                // 拦截所有请求
-                .addPathPatterns("/**")
-                // 排除不需要认证的路径
-                .excludePathPatterns(
-                        // 用户注册、登录、忘记密码和发送验证码（同时支持带/不带/api前缀的路径）
-                        "/user/register",
-                        "/user/login",
-                        "/user/forgot-password",
-                        "/user/send-verify-code",
-                        "/api/user/register",
-                        "/api/user/login",
-                        "/api/user/forgot-password",
-                        "/api/user/send-verify-code",
-                        
-                        // Knife4j文档相关
-                        "/doc.html",
-                        "/swagger-ui.html",
-                        "/swagger-ui/**",
-                        "/v3/api-docs/**",
-                        "/swagger-resources/**",
-                        "/webjars/**",
-                        "/favicon.ico",
-                        
-                        // 静态资源
-                        "/css/**",
-                        "/js/**",
-                        "/images/**",
-                        "/fonts/**",
-                        
-                        // 上传的文件访问（公开）
-                        "/uploads/**",
-                        
-                        // 健康检查等
-                        "/actuator/**",
-                        "/error"
-                );
+            registry.addInterceptor(jwtAuthInterceptor)
+                    // 拦截所有请求
+                    .addPathPatterns("/**")
+                    // 排除不需要认证的路径
+                    .excludePathPatterns(
+                            // 用户注册、登录、忘记密码和发送验证码
+                            "/api/user/register",
+                            "/api/user/login",
+                            "/api/user/login-by-email",
+                            "/api/user/forgot-password",
+                            "/api/user/send-verify-code",
+
+                            // 公告查询（公开访问）
+                            "/api/announcement/list",
+                            "/api/announcement/*",
+
+                            // Knife4j文档相关
+                            "/doc.html",
+                            "/swagger-ui.html",
+                            "/swagger-ui/**",
+                            "/v3/api-docs/**",
+                            "/swagger-resources/**",
+                            "/webjars/**",
+                            "/favicon.ico",
+
+                            // 静态资源
+                            "/css/**",
+                            "/js/**",
+                            "/images/**",
+                            "/fonts/**",
+
+                            // 上传的文件访问（公开）
+                            "/uploads/**",
+
+                            // 健康检查等
+                            "/actuator/**",
+                            "/error"
+                    );
+        }
     }
-}
 
     /**
      * 配置静态资源映射
@@ -74,20 +79,25 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // Knife4j 文档静态资源
         registry.addResourceHandler("/doc.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
-        
+
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
-        
+
         // Swagger UI 资源
         registry.addResourceHandler("/swagger-ui.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
-        
+
         registry.addResourceHandler("/swagger-ui/**")
                 .addResourceLocations("classpath:/META-INF/resources/swagger-ui/");
-        
+
         // API文档JSON/YAML资源
         registry.addResourceHandler("/v3/api-docs/**")
                 .addResourceLocations("classpath:/META-INF/resources/");
+        
+        // 上传文件静态资源映射
+        // 支持classpath和file两种方式
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("classpath:/uploads/", "file:" + uploadPath);
     }
 
     /**
@@ -100,4 +110,3 @@ public class WebMvcConfig implements WebMvcConfigurer {
         // registry.addRedirectViewController("/", "/doc.html");
     }
 }
-

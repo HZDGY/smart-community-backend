@@ -18,45 +18,72 @@ public class VisitorRegister {
      * 登记ID
      */
     @TableId(type = IdType.AUTO)
-    private Long register_id;
+    @TableField("register_id")
+    private Long registerId;
 
     /**
      * 用户ID
      */
-    private Long user_id;
+    @TableField("user_id")
+    private Long userId;
+
+    /**
+     * 访客姓名
+     */
+    @TableField("visitor_name")
+    private String visitorName;
+
+    /**
+     * 访客电话
+     */
+    @TableField("visitor_phone")
+    private String visitorPhone;
 
     /**
      * 来访目的
      */
-    private String visit_purpose;
+    @TableField("visit_purpose")
+    private String visitPurpose;
 
     /**
      * 放行时间
      */
-    private Date allow_time;
+    @TableField("allow_time")
+    private Date allowTime;
 
     /**
      * 有效日期
      */
-    private Date valid_date;
+    @TableField("valid_date")
+    private Date validDate;
 
     /**
      * 审核状态 0-待审核 1-已通过 2-已拒绝
      */
+    @TableField("status")
     private Integer status;
 
     /**
      * 创建时间
      */
-    private Date create_time;
+    @TableField("create_time")
+    private Date createTime;
 
     /**
      * 审核时间
      */
-    private Date audit_time;
+    @TableField("audit_time")
+    private Date auditTime;
 
     /**
      * 审核人ID
      */
-    private Long audit_user_id;
+    @TableField("audit_user_id")
+    private Long auditUserId;
+
+    /**
+     * 拒绝原因
+     */
+    @TableField("reject_reason")
+    private String rejectReason;
 }

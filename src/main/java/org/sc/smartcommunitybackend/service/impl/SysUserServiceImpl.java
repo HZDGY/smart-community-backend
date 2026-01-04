@@ -132,6 +132,47 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     }
 
     @Override
+    public UserLoginResponse loginByEmail(EmailLoginRequest request) {
+        // 1. 验证邮箱验证码
+        boolean valid = verifyCodeService.verifyEmailCode(request.getEmail(), request.getVerifyCode());
+        if (!valid) {
+            throw new BusinessException("验证码错误或已过期");
+        }
+
+        // 2. 根据邮箱查询用户
+        SysUser user = getByEmail(request.getEmail());
+        if (user == null) {
+            throw new BusinessException("该邮箱未注册");
+        }
+
+        // 3. 检查用户状态
+        if (user.getStatus() != UserConstant.STATUS_NORMAL) {
+            throw new BusinessException("账号已被冻结，请联系管理员");
+        }
+
+        // 4. 生成JWT Token
+        String token = jwtUtil.generateToken(user.getUserId(), user.getPhone());
+
+        // 5. 构建响应对象
+        UserLoginResponse response = UserLoginResponse.builder()
+                .token(token)
+                .tokenType("Bearer")
+                .userId(user.getUserId())
+                .userName(user.getUserName())
+                .phone(user.getPhone())
+                .email(user.getEmail())
+                .avatar(user.getAvatar())
+                .gender(user.getGender())
+                .age(user.getAge())
+                .userType(user.getUserType())
+                .status(user.getStatus())
+                .build();
+
+        logger.info("用户邮箱验证码登录成功: userId={}, email={}", user.getUserId(), user.getEmail());
+        return response;
+    }
+
+    @Override
     public SysUser getByPhone(String phone) {
         LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.eq(SysUser::getPhone, phone);
@@ -284,6 +325,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
                 .createTime(user.getCreateTime())
                 .updateTime(user.getUpdateTime())
                 .build();
+    }
+
+    @Override
+    public void logout(Long userId, String token) {
+        // 记录退出日志
+        logger.info("用户退出登录: userId={}", userId);
+        
+        // TODO: 如果使用Redis存储token黑名单，可以在这里将token加入黑名单
+        // 例如: redisTemplate.opsForValue().set("blacklist:" + token, "1", jwtUtil.getExpiration(), TimeUnit.MILLISECONDS);
+        
+        // 当前实现：客户端删除token即可
+        // 服务端可以选择将token加入黑名单（需要Redis支持）
     }
 }
 

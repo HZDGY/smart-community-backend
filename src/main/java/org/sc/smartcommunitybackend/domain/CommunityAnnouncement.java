@@ -18,30 +18,36 @@ public class CommunityAnnouncement {
      * 公告ID
      */
     @TableId(type = IdType.AUTO)
-    private Long announce_id;
+    @TableField("announce_id")
+    private Long announceId;
 
     /**
      * 公告标题
      */
+    @TableField("title")
     private String title;
 
     /**
      * 公告内容
      */
+    @TableField("content")
     private String content;
 
     /**
      * 发布人ID
      */
-    private Long publish_user_id;
+    @TableField("publish_user_id")
+    private Long publishUserId;
 
     /**
      * 发布时间
      */
-    private Date publish_time;
+    @TableField("publish_time")
+    private Date publishTime;
 
     /**
      * 阅读次数
      */
-    private Integer read_count;
+    @TableField("read_count")
+    private Integer readCount;
 }

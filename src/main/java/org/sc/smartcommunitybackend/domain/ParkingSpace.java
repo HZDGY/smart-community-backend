@@ -18,30 +18,60 @@ public class ParkingSpace {
      * 车位ID
      */
     @TableId(type = IdType.AUTO)
-    private Long space_id;
+    @TableField("space_id")
+    private Long spaceId;
 
     /**
      * 用户ID
      */
-    private Long user_id;
+    @TableField("user_id")
+    private Long userId;
 
     /**
      * 车位编号
      */
-    private String space_no;
+    @TableField("space_no")
+    private String spaceNo;
 
     /**
      * 绑定车牌号
      */
-    private String car_number;
+    @TableField("car_number")
+    private String carNumber;
+
+    /**
+     * 审核状态 0-待审核 1-已通过 2-已拒绝
+     */
+    @TableField("status")
+    private Integer status;
 
     /**
      * 创建时间
      */
-    private Date create_time;
+    @TableField("create_time")
+    private Date createTime;
 
     /**
      * 更新时间
      */
-    private Date update_time;
+    @TableField("update_time")
+    private Date updateTime;
+
+    /**
+     * 审核时间
+     */
+    @TableField("audit_time")
+    private Date auditTime;
+
+    /**
+     * 审核人ID
+     */
+    @TableField("audit_user_id")
+    private Long auditUserId;
+
+    /**
+     * 拒绝原因
+     */
+    @TableField("reject_reason")
+    private String rejectReason;
 }
