@@ -10,6 +10,7 @@ import org.sc.smartcommunitybackend.dto.response.PageResult;
 import org.sc.smartcommunitybackend.dto.response.ProductDetailVO;
 import org.sc.smartcommunitybackend.dto.response.ProductListItemVO;
 import org.sc.smartcommunitybackend.dto.response.StoreVO;
+import org.sc.smartcommunitybackend.service.ProductCollectService;
 import org.sc.smartcommunitybackend.service.ProductService;
 import org.sc.smartcommunitybackend.service.StoreProductService;
 import org.sc.smartcommunitybackend.service.StoreService;
@@ -27,6 +28,8 @@ public class MallController {
     private ProductService productService;
     @Resource
     private StoreProductService storeProductService;
+    @Resource
+    private ProductCollectService productCollectService;
     @PostMapping("/list")
     @Operation(summary = "商品列表")
     public PageResult<ProductListItemVO> list(@RequestBody ProductListRequest  productListRequest) {
@@ -45,5 +48,16 @@ public class MallController {
     @PostMapping("/stores")
     public List<StoreVO> stores(@RequestBody StoreListRequest storeListRequest) {
         return storeProductService.queryList(storeListRequest);
+    }
+
+    @Operation(summary = "收藏商品")
+    @PostMapping("/products/{productId}/collect")
+    public void collect(@PathVariable Long productId) {
+        productCollectService.collect(productId);
+    }
+    @Operation(summary = "取消收藏商品")
+    @DeleteMapping("/products/{productId}/collect")
+    public void cancelCollect(@PathVariable Long productId) {
+        productCollectService.cancelCollect(productId);
     }
 }

@@ -11,4 +11,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 public interface ProductCollectService extends IService<ProductCollect> {
 
     ProductCollect getByUserIdAndProductId(Long currentUserId, Long productId);
+
+    void collect(Long productId);
+
+    void cancelCollect(Long productId);
 }

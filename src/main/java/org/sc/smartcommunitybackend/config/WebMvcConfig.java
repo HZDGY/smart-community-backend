@@ -30,7 +30,11 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 // 排除不需要认证的路径
                 .excludePathPatterns(
-                        // 用户注册、登录、忘记密码和发送验证码
+                        // 用户注册、登录、忘记密码和发送验证码（同时支持带/不带/api前缀的路径）
+                        "/user/register",
+                        "/user/login",
+                        "/user/forgot-password",
+                        "/user/send-verify-code",
                         "/api/user/register",
                         "/api/user/login",
                         "/api/user/forgot-password",
@@ -58,7 +62,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                         "/actuator/**",
                         "/error"
                 );
-    }}
+    }
+}
 
     /**
      * 配置静态资源映射
@@ -67,18 +72,22 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         // Knife4j 文档静态资源
-        registry.addResourceHandler("doc.html")
+        registry.addResourceHandler("/doc.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
         
         registry.addResourceHandler("/webjars/**")
                 .addResourceLocations("classpath:/META-INF/resources/webjars/");
         
         // Swagger UI 资源
-        registry.addResourceHandler("swagger-ui.html")
+        registry.addResourceHandler("/swagger-ui.html")
                 .addResourceLocations("classpath:/META-INF/resources/");
         
         registry.addResourceHandler("/swagger-ui/**")
                 .addResourceLocations("classpath:/META-INF/resources/swagger-ui/");
+        
+        // API文档JSON/YAML资源
+        registry.addResourceHandler("/v3/api-docs/**")
+                .addResourceLocations("classpath:/META-INF/resources/");
     }
 
     /**

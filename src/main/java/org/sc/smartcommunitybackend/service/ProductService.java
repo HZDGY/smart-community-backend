@@ -17,4 +17,6 @@ public interface ProductService extends IService<Product> {
     PageResult<ProductListItemVO> queryList(ProductListRequest productListRequest);
 
     ProductDetailVO detail(Long productId);
+
+
 }
