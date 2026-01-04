@@ -96,4 +96,12 @@ public interface SysUserService extends IService<SysUser> {
      * @return 用户资料
      */
     UserProfileResponse getProfile(Long userId);
+
+    /**
+     * 用户退出登录
+     *
+     * @param userId 用户ID
+     * @param token 当前token
+     */
+    void logout(Long userId, String token);
 }

@@ -41,6 +41,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
                             "/api/user/forgot-password",
                             "/api/user/send-verify-code",
 
+                            // 公告查询（公开访问）
+                            "/api/announcement/list",
+                            "/api/announcement/*",
+
                             // Knife4j文档相关
                             "/doc.html",
                             "/swagger-ui.html",

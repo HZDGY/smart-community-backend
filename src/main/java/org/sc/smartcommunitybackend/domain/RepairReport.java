@@ -18,45 +18,54 @@ public class RepairReport {
      * 报事ID
      */
     @TableId(type = IdType.AUTO)
-    private Long report_id;
+    @TableField("report_id")
+    private Long reportId;
 
     /**
      * 用户ID
      */
-    private Long user_id;
+    @TableField("user_id")
+    private Long userId;
 
     /**
      * 事项类型
      */
-    private String report_type;
+    @TableField("report_type")
+    private String reportType;
 
     /**
      * 事项描述
      */
+    @TableField("description")
     private String description;
 
     /**
      * 处理状态 0-待处理 1-处理中 2-已完成 3-已驳回
      */
+    @TableField("status")
     private Integer status;
 
     /**
      * 创建时间
      */
-    private Date create_time;
+    @TableField("create_time")
+    private Date createTime;
 
     /**
      * 处理时间
      */
-    private Date handle_time;
+    @TableField("handle_time")
+    private Date handleTime;
 
     /**
      * 处理人ID
      */
-    private Long handle_user_id;
+    @TableField("handle_user_id")
+    private Long handleUserId;
 
     /**
      * 处理结果
      */
-    private String handle_result;
+    @TableField("handle_result")
+    private String handleResult;
 }

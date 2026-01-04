@@ -221,5 +221,21 @@ public class UserController extends BaseController {
         UserProfileResponse profile = sysUserService.updateProfile(userId, request);
         return success("更新成功", profile);
     }
+
+    @PostMapping("/logout")
+    @Operation(summary = "退出登录", description = "用户退出登录，清除token（客户端需删除本地token）")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "退出成功"),
+            @ApiResponse(responseCode = "401", description = "未授权（token无效或过期）")
+    })
+    public Result<Void> logout() {
+        Long userId = UserContextUtil.getCurrentUserId();
+        String token = UserContextUtil.getCurrentToken();
+        
+        // 调用退出登录服务
+        sysUserService.logout(userId, token);
+        
+        return success("退出登录成功", null);
+    }
 }
 

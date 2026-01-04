@@ -326,6 +326,18 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
                 .updateTime(user.getUpdateTime())
                 .build();
     }
+
+    @Override
+    public void logout(Long userId, String token) {
+        // 记录退出日志
+        logger.info("用户退出登录: userId={}", userId);
+        
+        // TODO: 如果使用Redis存储token黑名单，可以在这里将token加入黑名单
+        // 例如: redisTemplate.opsForValue().set("blacklist:" + token, "1", jwtUtil.getExpiration(), TimeUnit.MILLISECONDS);
+        
+        // 当前实现：客户端删除token即可
+        // 服务端可以选择将token加入黑名单（需要Redis支持）
+    }
 }
 
 
