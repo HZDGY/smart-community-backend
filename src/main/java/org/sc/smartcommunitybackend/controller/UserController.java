@@ -13,6 +13,7 @@ import org.sc.smartcommunitybackend.dto.response.UserLoginResponse;
 import org.sc.smartcommunitybackend.dto.response.UserProfileResponse;
 import org.sc.smartcommunitybackend.dto.response.UserRegisterResponse;
 import org.sc.smartcommunitybackend.service.SysUserService;
+import org.sc.smartcommunitybackend.service.VerifyCodeService;
 import org.sc.smartcommunitybackend.util.FileUploadUtil;
 import org.sc.smartcommunitybackend.util.JwtUtil;
 import org.sc.smartcommunitybackend.util.UserContextUtil;
@@ -36,6 +37,9 @@ public class UserController extends BaseController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private VerifyCodeService verifyCodeService;
 
     @PostMapping("/register")
     @Operation(summary = "用户注册", description = "任何具有中国公民资格的人员都可以通过此接口进行注册")
@@ -118,26 +122,40 @@ public class UserController extends BaseController {
         
         // 构建响应
         UserLoginResponse response = UserLoginResponse.builder()
-                .userId(user.getUser_id())
-                .userName(user.getUser_name())
+                .userId(user.getUserId())
+                .userName(user.getUserName())
                 .phone(user.getPhone())
                 .email(user.getEmail())
                 .avatar(user.getAvatar())
                 .gender(user.getGender())
                 .age(user.getAge())
-                .userType(user.getUser_type())
+                .userType(user.getUserType())
                 .status(user.getStatus())
                 .build();
         
         return success("获取成功", response);
     }
 
+    @PostMapping("/send-verify-code")
+    @Operation(summary = "发送邮箱验证码", description = "发送验证码到指定邮箱，用于忘记密码等场景（60秒内只能发送一次）")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "发送成功"),
+            @ApiResponse(responseCode = "400", description = "参数错误"),
+            @ApiResponse(responseCode = "600", description = "业务异常（如发送过于频繁）")
+    })
+    public Result<Void> sendVerifyCode(
+            @Parameter(description = "发送验证码请求", required = true)
+            @RequestBody @Valid SendVerifyCodeRequest request) {
+        verifyCodeService.sendEmailVerifyCode(request.getEmail());
+        return success();
+    }
+
     @PostMapping("/forgot-password")
-    @Operation(summary = "忘记密码", description = "通过手机号和验证码重置密码（验证码默认为123456）")
+    @Operation(summary = "忘记密码", description = "通过邮箱和验证码重置密码")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "重置成功"),
             @ApiResponse(responseCode = "400", description = "参数错误"),
-            @ApiResponse(responseCode = "600", description = "业务异常（如验证码错误、手机号未注册）")
+            @ApiResponse(responseCode = "600", description = "业务异常（如验证码错误、邮箱未注册）")
     })
     public Result<Void> forgotPassword(
             @Parameter(description = "忘记密码请求", required = true)

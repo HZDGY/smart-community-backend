@@ -1,6 +1,7 @@
 package org.sc.smartcommunitybackend.dto.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
@@ -13,17 +14,17 @@ import lombok.Data;
 public class ForgotPasswordRequest {
 
     /**
-     * 手机号
+     * 邮箱地址
      */
-    @Schema(description = "手机号", example = "13800138000")
-    @NotBlank(message = "手机号不能为空")
-    @Pattern(regexp = "^1[3-9]\\d{9}$", message = "手机号格式不正确")
-    private String phone;
+    @Schema(description = "邮箱地址", example = "user@example.com")
+    @NotBlank(message = "邮箱不能为空")
+    @Email(message = "邮箱格式不正确")
+    private String email;
 
     /**
-     * 验证码（实际项目中需要短信验证码，这里简化处理，可以使用默认验证码或其他验证方式）
+     * 邮箱验证码
      */
-    @Schema(description = "验证码", example = "123456")
+    @Schema(description = "邮箱验证码", example = "123456")
     @NotBlank(message = "验证码不能为空")
     private String verifyCode;
 

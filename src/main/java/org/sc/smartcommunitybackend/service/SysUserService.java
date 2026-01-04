@@ -48,12 +48,20 @@ public interface SysUserService extends IService<SysUser> {
     boolean updateAvatar(Long userId, String avatarUrl);
 
     /**
-     * 忘记密码（通过验证码重置密码）
+     * 忘记密码（通过邮箱验证码重置密码）
      *
      * @param request 忘记密码请求
      * @return 是否重置成功
      */
     boolean forgotPassword(ForgotPasswordRequest request);
+
+    /**
+     * 根据邮箱查询用户
+     *
+     * @param email 邮箱
+     * @return 用户信息
+     */
+    SysUser getByEmail(String email);
 
     /**
      * 修改密码（需要验证旧密码）

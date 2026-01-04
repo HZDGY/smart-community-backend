@@ -11,10 +11,13 @@ import org.sc.smartcommunitybackend.dto.response.UserRegisterResponse;
 import org.sc.smartcommunitybackend.exception.BusinessException;
 import org.sc.smartcommunitybackend.service.SysUserService;
 import org.sc.smartcommunitybackend.mapper.SysUserMapper;
+import org.sc.smartcommunitybackend.service.VerifyCodeService;
+import org.sc.smartcommunitybackend.util.EmailUtil;
 import org.sc.smartcommunitybackend.util.JwtUtil;
 import org.sc.smartcommunitybackend.util.PasswordUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,14 +32,16 @@ import java.util.Date;
 public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
     implements SysUserService{
 
+    private static final Logger logger = LoggerFactory.getLogger(SysUserServiceImpl.class);
+
     @Autowired
     private JwtUtil jwtUtil;
 
-    /**
-     * 验证码（简化处理，实际项目中应该从Redis或短信服务获取）
-     */
-    @Value("${app.default-verify-code:123456}")
-    private String defaultVerifyCode;
+    @Autowired
+    private VerifyCodeService verifyCodeService;
+
+    @Autowired
+    private EmailUtil emailUtil;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -54,16 +59,16 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
         // 3. 创建用户对象
         SysUser user = new SysUser();
-        user.setUser_name(request.getUserName());
+        user.setUserName(request.getUserName());
         user.setPhone(request.getPhone());
         user.setPassword(PasswordUtil.encrypt(request.getPassword())); // 密码加密
         user.setAge(request.getAge());
         user.setGender(request.getGender());
         user.setEmail(request.getEmail());
-        user.setUser_type(UserConstant.USER_TYPE_NORMAL); // 默认为普通用户
+        user.setUserType(UserConstant.USER_TYPE_NORMAL); // 默认为普通用户
         user.setStatus(UserConstant.STATUS_NORMAL); // 默认状态正常
-        user.setCreate_time(new Date());
-        user.setUpdate_time(new Date());
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
 
         // 4. 保存用户
         boolean saved = save(user);
@@ -73,15 +78,15 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
         // 5. 构建响应对象
         UserRegisterResponse response = new UserRegisterResponse();
-        response.setUserId(user.getUser_id());
-        response.setUserName(user.getUser_name());
+        response.setUserId(user.getUserId());
+        response.setUserName(user.getUserName());
         response.setPhone(user.getPhone());
         response.setGender(user.getGender());
         response.setAge(user.getAge());
         response.setEmail(user.getEmail());
-        response.setUserType(user.getUser_type());
+        response.setUserType(user.getUserType());
         response.setStatus(user.getStatus());
-        response.setCreateTime(user.getCreate_time());
+        response.setCreateTime(user.getCreateTime());
 
         return response;
     }
@@ -106,20 +111,20 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         }
 
         // 4. 生成JWT Token
-        String token = jwtUtil.generateToken(user.getUser_id(), user.getPhone());
+        String token = jwtUtil.generateToken(user.getUserId(), user.getPhone());
 
         // 5. 构建响应对象
         UserLoginResponse response = UserLoginResponse.builder()
                 .token(token)
                 .tokenType("Bearer")
-                .userId(user.getUser_id())
-                .userName(user.getUser_name())
+                .userId(user.getUserId())
+                .userName(user.getUserName())
                 .phone(user.getPhone())
                 .email(user.getEmail())
                 .avatar(user.getAvatar())
                 .gender(user.getGender())
                 .age(user.getAge())
-                .userType(user.getUser_type())
+                .userType(user.getUserType())
                 .status(user.getStatus())
                 .build();
 
@@ -140,7 +145,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
             throw new BusinessException("用户不存在");
         }
         user.setAvatar(avatarUrl);
-        user.setUpdate_time(new Date());
+        user.setUpdateTime(new Date());
         return updateById(user);
     }
 
@@ -152,21 +157,41 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
             throw new BusinessException("两次密码输入不一致");
         }
 
-        // 2. 验证验证码（简化处理，实际项目中应该验证短信验证码）
-        if (!defaultVerifyCode.equals(request.getVerifyCode())) {
-            throw new BusinessException("验证码错误");
+        // 2. 验证邮箱验证码
+        boolean codeValid = verifyCodeService.verifyEmailCode(request.getEmail(), request.getVerifyCode());
+        if (!codeValid) {
+            throw new BusinessException("验证码错误或已过期");
         }
 
         // 3. 查询用户是否存在
-        SysUser user = getByPhone(request.getPhone());
+        SysUser user = getByEmail(request.getEmail());
         if (user == null) {
-            throw new BusinessException("该手机号未注册");
+            throw new BusinessException("该邮箱未注册");
         }
 
         // 4. 更新密码
         user.setPassword(PasswordUtil.encrypt(request.getNewPassword()));
-        user.setUpdate_time(new Date());
-        return updateById(user);
+        user.setUpdateTime(new Date());
+        boolean updated = updateById(user);
+
+        // 5. 发送密码重置成功通知邮件
+        if (updated) {
+            try {
+                emailUtil.sendPasswordResetNotification(request.getEmail());
+            } catch (Exception e) {
+                // 通知邮件发送失败不影响密码重置
+                logger.error("发送密码重置通知邮件失败", e);
+            }
+        }
+
+        return updated;
+    }
+
+    @Override
+    public SysUser getByEmail(String email) {
+        LambdaQueryWrapper<SysUser> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(SysUser::getEmail, email);
+        return getOne(queryWrapper);
     }
 
     @Override
@@ -196,7 +221,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
 
         // 5. 更新密码
         user.setPassword(PasswordUtil.encrypt(request.getNewPassword()));
-        user.setUpdate_time(new Date());
+        user.setUpdateTime(new Date());
         return updateById(user);
     }
 
@@ -212,7 +237,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         // 2. 更新用户信息（只更新非空字段）
         boolean updated = false;
         if (request.getUserName() != null && !request.getUserName().isEmpty()) {
-            user.setUser_name(request.getUserName());
+            user.setUserName(request.getUserName());
             updated = true;
         }
         if (request.getEmail() != null && !request.getEmail().isEmpty()) {
@@ -229,7 +254,7 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         }
 
         if (updated) {
-            user.setUpdate_time(new Date());
+            user.setUpdateTime(new Date());
             if (!updateById(user)) {
                 throw new BusinessException("更新个人资料失败");
             }
@@ -247,17 +272,17 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser>
         }
 
         return UserProfileResponse.builder()
-                .userId(user.getUser_id())
-                .userName(user.getUser_name())
+                .userId(user.getUserId())
+                .userName(user.getUserName())
                 .phone(user.getPhone())
                 .email(user.getEmail())
                 .avatar(user.getAvatar())
                 .gender(user.getGender())
                 .age(user.getAge())
-                .userType(user.getUser_type())
+                .userType(user.getUserType())
                 .status(user.getStatus())
-                .createTime(user.getCreate_time())
-                .updateTime(user.getUpdate_time())
+                .createTime(user.getCreateTime())
+                .updateTime(user.getUpdateTime())
                 .build();
     }
 }
