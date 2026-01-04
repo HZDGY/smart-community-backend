@@ -1,7 +1,13 @@
 package org.sc.smartcommunitybackend.service;
 
+import org.sc.smartcommunitybackend.domain.ProductCollect;
 import org.sc.smartcommunitybackend.domain.StoreProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.sc.smartcommunitybackend.dto.request.StoreListRequest;
+import org.sc.smartcommunitybackend.dto.response.StoreListItemVO;
+import org.sc.smartcommunitybackend.dto.response.StoreVO;
+
+import java.util.List;
 
 /**
 * @author 吴展德
@@ -10,4 +16,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface StoreProductService extends IService<StoreProduct> {
 
+
+    List<StoreVO> queryList(StoreListRequest storeListRequest);
+    List<StoreListItemVO> getAvailableStores(Long productId);
 }
