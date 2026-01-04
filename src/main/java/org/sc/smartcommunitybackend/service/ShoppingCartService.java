@@ -2,6 +2,11 @@ package org.sc.smartcommunitybackend.service;
 
 import org.sc.smartcommunitybackend.domain.ShoppingCart;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.sc.smartcommunitybackend.dto.request.AddToCartRequest;
+import org.sc.smartcommunitybackend.dto.request.ShoppingCartItemRequest;
+import org.sc.smartcommunitybackend.dto.response.ShoppingCartItemVO;
+
+import java.util.List;
 
 /**
 * @author 吴展德
@@ -10,4 +15,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ShoppingCartService extends IService<ShoppingCart> {
 
+    void addToCart(AddToCartRequest addToCartRequest);
+
+    void updateCartItemQuantity(ShoppingCartItemRequest shoppingCartItemRequest);
+
+    List<ShoppingCartItemVO> getCartItems();
 }

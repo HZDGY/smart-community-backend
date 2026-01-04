@@ -117,6 +117,11 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         return pageResult;
     }
 
+    /**
+     * 商品详情
+     * @param productId
+     * @return
+     */
     @Override
     public ProductDetailVO detail(Long productId) {
         if (productId == null) {

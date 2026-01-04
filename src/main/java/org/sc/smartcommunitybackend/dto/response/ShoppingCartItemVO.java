@@ -34,4 +34,7 @@ public class ShoppingCartItemVO extends BaseResponse {
     
     @Schema(description = "小计金额")
     private BigDecimal subtotal;
+
+    @Schema(description = "商品当前库存")
+    private Integer stock;
 }

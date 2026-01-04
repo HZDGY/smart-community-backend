@@ -76,7 +76,6 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductMapper, Sto
      * @param productId
      * @return
      */
-
     @Override
     public List<StoreListItemVO> getAvailableStores(Long productId) {
         log.info("获取可用门店列表productId:{}", productId);
