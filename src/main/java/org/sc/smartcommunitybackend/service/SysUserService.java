@@ -23,12 +23,20 @@ public interface SysUserService extends IService<SysUser> {
     UserRegisterResponse register(UserRegisterRequest request);
 
     /**
-     * 用户登录
+     * 用户登录（手机号+密码）
      *
      * @param request 登录请求
      * @return 登录响应(包含用户信息和token)
      */
     UserLoginResponse login(UserLoginRequest request);
+
+    /**
+     * 邮箱验证码登录
+     *
+     * @param request 邮箱验证码登录请求
+     * @return 登录响应(包含用户信息和token)
+     */
+    UserLoginResponse loginByEmail(EmailLoginRequest request);
 
     /**
      * 根据手机号查询用户

@@ -56,7 +56,7 @@ public class UserController extends BaseController {
     }
 
     @PostMapping("/login")
-    @Operation(summary = "用户登录", description = "使用手机号和密码进行登录，返回用户信息和JWT令牌")
+    @Operation(summary = "用户登录（手机号+密码）", description = "使用手机号和密码进行登录，返回用户信息和JWT令牌")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "登录成功"),
             @ApiResponse(responseCode = "400", description = "参数错误"),
@@ -66,6 +66,20 @@ public class UserController extends BaseController {
             @Parameter(description = "用户登录信息", required = true)
             @RequestBody @Valid UserLoginRequest request) {
         UserLoginResponse response = sysUserService.login(request);
+        return success("登录成功", response);
+    }
+
+    @PostMapping("/login-by-email")
+    @Operation(summary = "邮箱验证码登录", description = "使用邮箱和验证码进行登录，返回用户信息和JWT令牌")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", description = "登录成功"),
+            @ApiResponse(responseCode = "400", description = "参数错误"),
+            @ApiResponse(responseCode = "600", description = "业务异常（如验证码错误、邮箱未注册、账号被冻结）")
+    })
+    public Result<UserLoginResponse> loginByEmail(
+            @Parameter(description = "邮箱验证码登录信息", required = true)
+            @RequestBody @Valid EmailLoginRequest request) {
+        UserLoginResponse response = sysUserService.loginByEmail(request);
         return success("登录成功", response);
     }
 
