@@ -1,7 +1,6 @@
 package org.sc.smartcommunitybackend.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
@@ -39,6 +38,11 @@ public class Store {
      * 营业时间
      */
     private String business_hours;
+    
+    /**
+     * 联系电话
+     */
+    private String contact_phone;
 
     /**
      * 创建时间
