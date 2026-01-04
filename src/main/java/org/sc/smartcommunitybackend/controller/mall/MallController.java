@@ -6,6 +6,7 @@ import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.sc.smartcommunitybackend.dto.request.ProductListRequest;
 import org.sc.smartcommunitybackend.dto.response.PageResult;
+import org.sc.smartcommunitybackend.dto.response.ProductDetailVO;
 import org.sc.smartcommunitybackend.dto.response.ProductListItemVO;
 import org.sc.smartcommunitybackend.service.ProductService;
 import org.springframework.web.bind.annotation.*;
@@ -22,5 +23,12 @@ public class MallController {
     public PageResult<ProductListItemVO> list(@RequestBody ProductListRequest  productListRequest) {
         PageResult<ProductListItemVO> productListItemVOPageResult = productService.queryList(productListRequest);
         return productListItemVOPageResult;
+    }
+
+    @Operation(summary = "查询商品详情")
+    @GetMapping("/products/{productId}")
+    public ProductDetailVO detail(@PathVariable Long productId) {
+        ProductDetailVO productListItemVO = productService.detail(productId);
+        return productListItemVO;
     }
 }

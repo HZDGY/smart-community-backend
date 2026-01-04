@@ -1,15 +1,24 @@
 package org.sc.smartcommunitybackend.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.sc.smartcommunitybackend.domain.Product;
+import org.sc.smartcommunitybackend.domain.ProductCollect;
 import org.sc.smartcommunitybackend.dto.request.ProductListRequest;
 import org.sc.smartcommunitybackend.dto.response.PageResult;
+import org.sc.smartcommunitybackend.dto.response.ProductDetailVO;
 import org.sc.smartcommunitybackend.dto.response.ProductListItemVO;
+import org.sc.smartcommunitybackend.dto.response.StoreListItemVO;
+import org.sc.smartcommunitybackend.service.ProductCollectService;
 import org.sc.smartcommunitybackend.service.ProductService;
 import org.sc.smartcommunitybackend.mapper.ProductMapper;
+import org.sc.smartcommunitybackend.service.StoreProductService;
+import org.sc.smartcommunitybackend.util.UserContextUtil;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -27,6 +36,10 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
     implements ProductService{
+    @Resource
+    private StoreProductService storeProductService;
+    @Resource
+    private ProductCollectService productCollectService;
 
     /**
      * 商品列表
@@ -45,9 +58,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
 
         // 创建查询条件
         LambdaQueryWrapper<Product> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(categoryId != null, Product::getCategory_id, categoryId);
-        queryWrapper.ge(minPrice != null, Product::getPrice, minPrice);
-        queryWrapper.le(maxPrice != null, Product::getPrice, maxPrice);
+        // 只有当categoryId大于0时才添加分类查询条件
+        queryWrapper.eq(categoryId != null && categoryId > 0, Product::getCategory_id, categoryId);
+        // 只有当minPrice大于0时才添加最低价格查询条件
+        queryWrapper.ge(minPrice != null && minPrice.compareTo(BigDecimal.ZERO) > 0, Product::getPrice, minPrice);
+        // 只有当maxPrice大于0时才添加最高价格查询条件
+        queryWrapper.le(maxPrice != null && maxPrice.compareTo(BigDecimal.ZERO) > 0, Product::getPrice, maxPrice);
         // 排序
         // 排序
         if (StringUtils.hasText(sortBy)) {
@@ -83,7 +99,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
             vo.setPrice(product.getPrice());
             vo.setCoverImg(product.getCover_img());
             // 设置是否已收藏（根据用户ID和商品ID查询收藏状态）
-            vo.setIsCollected(false); // 暂时设置为未收藏
+            Long currentUserId = UserContextUtil.getCurrentUserId();
+            if (currentUserId != null) {
+                // 查询用户收藏状态
+                ProductCollect byUserIdAndProductId = productCollectService.getByUserIdAndProductId(currentUserId, product.getProduct_id());
+                vo.setIsCollected(byUserIdAndProductId != null);
+            }
             return vo;
         }).collect(Collectors.toList());
 
@@ -94,6 +115,33 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         pageResult.setPages(resultPage.getPages());
 
         return pageResult;
+    }
+
+    @Override
+    public ProductDetailVO detail(Long productId) {
+        if (productId == null) {
+            throw new RuntimeException("商品ID不能为空");
+        }
+        Product product = this.getById(productId);
+        ProductDetailVO productDetailVO = new ProductDetailVO();
+        productDetailVO.setProductId(product.getProduct_id());
+        productDetailVO.setProductName(product.getProduct_name());
+        productDetailVO.setCategoryId(product.getCategory_id());
+        productDetailVO.setCategoryName(productDetailVO.getCategoryName());
+        productDetailVO.setDescription(product.getDescription());
+        productDetailVO.setPrice(product.getPrice());
+        productDetailVO.setCoverImg(product.getCover_img());
+        // 设置是否已收藏
+        Long currentUserId = UserContextUtil.getCurrentUserId();
+        if (currentUserId != null) {
+            // 获取用户收藏状态
+            ProductCollect byUserIdAndProductId = productCollectService.getByUserIdAndProductId(currentUserId, productId);
+            productDetailVO.setIsCollected(byUserIdAndProductId != null);
+        }
+        // 获取可售门店列表
+        List<StoreListItemVO> availableStores = storeProductService.getAvailableStores(productId);
+        productDetailVO.setAvailableStores(availableStores);
+        return productDetailVO;
     }
 
 }
