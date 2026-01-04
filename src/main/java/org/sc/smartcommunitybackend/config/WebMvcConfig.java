@@ -1,12 +1,17 @@
 package org.sc.smartcommunitybackend.config;
 
 import org.sc.smartcommunitybackend.interceptor.JwtAuthInterceptor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import java.io.File;
 
 /**
  * Web MVC 配置
@@ -14,8 +19,13 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
 
+    private static final Logger logger = LoggerFactory.getLogger(WebMvcConfig.class);
+
     @Autowired
     private JwtAuthInterceptor jwtAuthInterceptor;
+
+    @Value("${file.upload.path}")
+    private String uploadPath;
 
     /**
      * 配置拦截器
@@ -59,7 +69,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     /**
      * 配置静态资源映射
-     * 确保Knife4j的静态资源能够正确访问
+     * 1. Knife4j文档静态资源
+     * 2. 文件上传目录映射
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -76,6 +87,21 @@ public class WebMvcConfig implements WebMvcConfigurer {
         
         registry.addResourceHandler("/swagger-ui/**")
                 .addResourceLocations("classpath:/META-INF/resources/swagger-ui/");
+
+        // 文件上传目录映射
+        File uploadDir = new File(uploadPath);
+        if (!uploadDir.exists()) {
+            boolean created = uploadDir.mkdirs();
+            logger.info("创建上传目录: {}, 结果: {}", uploadDir.getAbsolutePath(), created);
+        }
+
+        String absolutePath = uploadDir.getAbsolutePath();
+        String locationPath = "file:" + absolutePath + File.separator;
+        
+        logger.info("配置文件上传路径映射: /uploads/** -> {}", locationPath);
+        
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations(locationPath);
     }
 
     /**
