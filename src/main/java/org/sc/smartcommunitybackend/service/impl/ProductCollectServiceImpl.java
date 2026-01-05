@@ -32,8 +32,13 @@ public class ProductCollectServiceImpl extends ServiceImpl<ProductCollectMapper,
     @Override
     public ProductCollect getByUserIdAndProductId(Long currentUserId, Long productId) {
         log.info("根据用户ID和商品ID查询收藏记录currentUserId和productId：{}，{}", currentUserId, productId);
-        if (currentUserId == null || productId == null){
-            throw new RuntimeException("参数不能为空");
+        if (currentUserId == null) {
+            log.error("查询收藏记录失败：用户ID不能为空");
+            throw new RuntimeException("用户ID不能为空");
+        }
+        if (productId == null) {
+            log.error("查询收藏记录失败：商品ID不能为空");
+            throw new RuntimeException("商品ID不能为空");
         }
         return this.getOne(new LambdaQueryWrapper<ProductCollect>()
                 .eq(ProductCollect::getUser_id, currentUserId)
