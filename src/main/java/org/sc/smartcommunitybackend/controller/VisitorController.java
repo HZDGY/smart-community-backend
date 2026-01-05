@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
  * 访客登记控制器
  */
 @RestController
-@RequestMapping("/api/visitor")
+@RequestMapping("/visitor")
 @Tag(name = "访客登记管理", description = "访客登记相关接口")
 public class VisitorController extends BaseController {
 

@@ -31,7 +31,7 @@ import java.util.stream.Collectors;
  * 权限管理控制器
  */
 @RestController
-@RequestMapping("/api/permission")
+@RequestMapping("/permission")
 @Tag(name = "权限管理", description = "权限和角色管理相关接口")
 public class PermissionController extends BaseController {
     

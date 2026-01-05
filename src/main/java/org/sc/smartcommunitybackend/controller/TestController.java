@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
  * 测试控制器（Swagger示例）
  */
 @RestController
-@RequestMapping("/api/test")
+@RequestMapping("/test")
 @Tag(name = "测试接口", description = "用于测试和演示Swagger文档的接口")
 public class TestController extends BaseController {
 

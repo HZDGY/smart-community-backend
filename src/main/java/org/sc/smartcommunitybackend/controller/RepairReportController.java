@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  * @description 提供报事维修相关功能，包括提交维修申请、查询维修列表和详情
  */
 @RestController
-@RequestMapping("/api/repair")
+@RequestMapping("/repair")
 @Tag(name = "物业管理-报事维修", description = "用户可选择事项类型，描述问题，提交维修申请至社区管理人员。支持查询维修进度和处理结果。")
 public class RepairReportController extends BaseController {
 

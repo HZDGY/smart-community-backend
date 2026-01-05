@@ -24,7 +24,7 @@ import java.util.List;
  * 车位管理控制器
  */
 @RestController
-@RequestMapping("/api/parking")
+@RequestMapping("/parking")
 @Tag(name = "安保管理-车位管理", description = "车位登记和管理相关接口，支持车位登记、查询、更新和删除")
 public class ParkingController extends BaseController {
 

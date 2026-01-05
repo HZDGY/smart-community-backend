@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
  * 用于演示和测试权限系统的各种功能
  */
 @RestController
-@RequestMapping("/api/test/permission")
+@RequestMapping("/test/permission")
 @Tag(name = "权限测试", description = "权限系统测试接口")
 public class PermissionTestController extends BaseController {
     
