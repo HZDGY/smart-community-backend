@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.sc.smartcommunitybackend.common.Result;
 import org.sc.smartcommunitybackend.common.annotation.RequirePermission;
+import org.sc.smartcommunitybackend.common.annotation.RequireRole;
 import org.sc.smartcommunitybackend.domain.SysPermission;
 import org.sc.smartcommunitybackend.domain.SysRole;
 import org.sc.smartcommunitybackend.dto.request.AssignPermissionRequest;
@@ -13,8 +14,10 @@ import org.sc.smartcommunitybackend.dto.request.AssignRoleRequest;
 import org.sc.smartcommunitybackend.dto.request.CreatePermissionRequest;
 import org.sc.smartcommunitybackend.dto.request.CreateRoleRequest;
 import org.sc.smartcommunitybackend.dto.response.PermissionDTO;
+import org.sc.smartcommunitybackend.dto.response.PermissionScanResult;
 import org.sc.smartcommunitybackend.dto.response.RoleDTO;
 import org.sc.smartcommunitybackend.dto.response.UserPermissionResponse;
+import org.sc.smartcommunitybackend.service.PermissionScanService;
 import org.sc.smartcommunitybackend.service.PermissionService;
 import org.sc.smartcommunitybackend.util.UserContextUtil;
 import org.springframework.beans.BeanUtils;
@@ -34,6 +37,9 @@ public class PermissionController extends BaseController {
     
     @Autowired
     private PermissionService permissionService;
+    
+    @Autowired
+    private PermissionScanService permissionScanService;
     
     @GetMapping("/list")
     @Operation(summary = "获取所有权限", description = "查询系统中所有的权限列表")
@@ -151,5 +157,13 @@ public class PermissionController extends BaseController {
     public Result<UserPermissionResponse> getCurrentUserPermissions() {
         Long userId = UserContextUtil.getCurrentUserId();
         return getUserPermissions(userId);
+    }
+    
+    @PostMapping("/scan")
+    @Operation(summary = "扫描并同步权限", description = "扫描所有Controller中的权限注解并自动存入数据库（仅超级管理员可用）")
+    @RequireRole("ROLE_SUPER_ADMIN")
+    public Result<PermissionScanResult> scanPermissions() {
+        PermissionScanResult result = permissionScanService.scanAndSavePermissions();
+        return success("权限扫描完成", result);
     }
 }

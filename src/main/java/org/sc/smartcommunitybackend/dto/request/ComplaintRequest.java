@@ -37,5 +37,12 @@ public class ComplaintRequest {
     @NotBlank(message = "投诉描述不能为空")
     @Size(min = 5, max = 500, message = "投诉描述长度应在5-500个字符之间")
     private String description;
+
+    @Schema(
+            description = "投诉位置",
+            example = "3号楼2单元1002",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    private String location;
 }
 

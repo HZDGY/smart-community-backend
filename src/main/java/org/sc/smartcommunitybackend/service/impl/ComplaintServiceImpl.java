@@ -30,6 +30,7 @@ public class ComplaintServiceImpl extends ServiceImpl<ComplaintMapper, Complaint
         complaint.setUserId(userId);
         complaint.setComplaintType(request.getComplaintType());
         complaint.setDescription(request.getDescription());
+        complaint.setLocation(request.getLocation());
         complaint.setStatus(ComplaintConstant.STATUS_PENDING);
         complaint.setCreateTime(new Date());
         
