@@ -2,6 +2,10 @@ package org.sc.smartcommunitybackend.service;
 
 import org.sc.smartcommunitybackend.domain.ProductCategory;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.sc.smartcommunitybackend.dto.request.PageQueryDTO;
+import org.sc.smartcommunitybackend.dto.request.ProductCategoryRequest;
+import org.sc.smartcommunitybackend.dto.response.PageResult;
+import org.sc.smartcommunitybackend.dto.response.ProductCategoryVO;
 
 /**
 * @author 吴展德
@@ -10,4 +14,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface ProductCategoryService extends IService<ProductCategory> {
 
+    PageResult<ProductCategoryVO> categoryList(PageQueryDTO pageQueryDTO);
+
+    Boolean addCategory(ProductCategoryRequest productCategoryRequest);
+
+    Boolean updateCategory(Long categoryId, ProductCategoryRequest productCategoryRequest);
+
+    Boolean deleteCategory(Long categoryId);
 }
