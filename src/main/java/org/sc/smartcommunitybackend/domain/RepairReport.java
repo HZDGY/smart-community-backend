@@ -17,8 +17,7 @@ public class RepairReport {
     /**
      * 报事ID
      */
-    @TableId(type = IdType.AUTO)
-    @TableField("report_id")
+    @TableId(value = "report_id", type = IdType.AUTO)
     private Long reportId;
 
     /**

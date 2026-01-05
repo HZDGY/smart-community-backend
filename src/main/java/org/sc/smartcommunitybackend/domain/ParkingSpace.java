@@ -17,8 +17,7 @@ public class ParkingSpace {
     /**
      * 车位ID
      */
-    @TableId(type = IdType.AUTO)
-    @TableField("space_id")
+    @TableId(value = "space_id", type = IdType.AUTO)
     private Long spaceId;
 
     /**

@@ -17,8 +17,7 @@ public class Complaint {
     /**
      * 投诉ID
      */
-    @TableId(type = IdType.AUTO)
-    @TableField("complaint_id")
+    @TableId(value = "complaint_id", type = IdType.AUTO)
     private Long complaintId;
 
     /**

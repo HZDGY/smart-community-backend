@@ -1,6 +1,7 @@
 package org.sc.smartcommunitybackend.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -18,40 +19,48 @@ public class SysPermission {
      * 权限ID
      */
     @TableId(type = IdType.AUTO)
-    private Long permission_id;
+    @TableField("permission_id")
+    private Long permissionId;
 
     /**
      * 权限名称
      */
-    private String permission_name;
+    @TableField("permission_name")
+    private String permissionName;
 
     /**
      * 权限编码（如：user:create）
      */
-    private String permission_code;
+    @TableField("permission_code")
+    private String permissionCode;
 
     /**
      * 资源类型（menu-菜单 button-按钮 api-接口）
      */
-    private String resource_type;
+    @TableField("resource_type")
+    private String resourceType;
 
     /**
      * 权限描述
      */
+    @TableField("description")
     private String description;
 
     /**
      * 状态 0-禁用 1-启用
      */
+    @TableField("status")
     private Integer status;
 
     /**
      * 创建时间
      */
-    private Date create_time;
+    @TableField("create_time")
+    private Date createTime;
 
     /**
      * 更新时间
      */
-    private Date update_time;
+    @TableField("update_time")
+    private Date updateTime;
 }

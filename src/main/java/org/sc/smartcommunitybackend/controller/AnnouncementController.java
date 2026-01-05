@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
  * 公告控制器
  */
 @RestController
-@RequestMapping("/api/announcement")
+@RequestMapping("/announcement")
 @Tag(name = "公告管理", description = "社区公告查询相关接口")
 public class AnnouncementController extends BaseController {
 

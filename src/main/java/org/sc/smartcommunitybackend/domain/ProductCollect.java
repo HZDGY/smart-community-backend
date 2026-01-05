@@ -17,7 +17,7 @@ public class ProductCollect {
     /**
      * 收藏ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "collect_id", type = IdType.AUTO)
     private Long collect_id;
 
     /**

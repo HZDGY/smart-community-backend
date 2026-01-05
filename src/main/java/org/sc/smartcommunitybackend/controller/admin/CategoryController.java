@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.sc.smartcommunitybackend.common.annotation.RequirePermission;
 import org.sc.smartcommunitybackend.dto.request.PageQueryDTO;
 import org.sc.smartcommunitybackend.dto.request.ProductCategoryRequest;
 import org.sc.smartcommunitybackend.dto.response.PageResult;

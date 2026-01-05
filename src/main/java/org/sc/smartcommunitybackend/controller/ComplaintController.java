@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.*;
  * @description 提供事项投诉相关功能，包括提交投诉、查询投诉列表和详情
  */
 @RestController
-@RequestMapping("/api/complaint")
+@RequestMapping("/complaint")
 @Tag(name = "物业管理-事项投诉", description = "用户可编辑投诉事项类型和事项描述，提交至社区管理人员。支持查询投诉进度和处理结果。")
 public class ComplaintController extends BaseController {
 

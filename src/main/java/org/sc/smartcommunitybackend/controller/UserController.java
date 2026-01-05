@@ -25,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
  * 用户控制器
  */
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 @Tag(name = "用户管理", description = "用户注册、登录等相关接口")
 public class UserController extends BaseController {
 

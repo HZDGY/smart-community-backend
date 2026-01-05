@@ -18,7 +18,7 @@ public class WalletFlow {
     /**
      * 流水ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "flow_id", type = IdType.AUTO)
     private Long flow_id;
 
     /**
