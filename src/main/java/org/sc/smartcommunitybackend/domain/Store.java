@@ -16,7 +16,7 @@ public class Store {
     /**
      * 门店ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "store_id", type = IdType.AUTO)
     private Long store_id;
 
     /**

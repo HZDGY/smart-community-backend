@@ -17,7 +17,7 @@ public class ServiceArea {
     /**
      * 区域ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "area_id", type = IdType.AUTO)
     private Long area_id;
 
     /**

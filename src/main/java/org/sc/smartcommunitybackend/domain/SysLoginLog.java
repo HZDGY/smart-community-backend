@@ -17,7 +17,7 @@ public class SysLoginLog {
     /**
      * 日志ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "log_id", type = IdType.AUTO)
     private Long log_id;
 
     /**

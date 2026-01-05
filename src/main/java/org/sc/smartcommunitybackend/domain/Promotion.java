@@ -17,7 +17,7 @@ public class Promotion {
     /**
      * 促销ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "promotion_id", type = IdType.AUTO)
     private Long promotion_id;
 
     /**

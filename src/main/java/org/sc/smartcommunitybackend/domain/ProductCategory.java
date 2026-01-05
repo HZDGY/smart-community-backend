@@ -17,7 +17,7 @@ public class ProductCategory {
     /**
      * 分类ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "category_id", type = IdType.AUTO)
     private Long category_id;
 
     /**

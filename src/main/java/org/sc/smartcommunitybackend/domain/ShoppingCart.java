@@ -17,7 +17,7 @@ public class ShoppingCart {
     /**
      * 购物车ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "cart_id", type = IdType.AUTO)
     private Long cart_id;
 
     /**

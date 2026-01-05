@@ -18,7 +18,7 @@ public class UserWallet {
     /**
      * 钱包ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "wallet_id", type = IdType.AUTO)
     private Long wallet_id;
 
     /**

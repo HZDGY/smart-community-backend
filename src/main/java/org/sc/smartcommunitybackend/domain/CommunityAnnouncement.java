@@ -17,8 +17,7 @@ public class CommunityAnnouncement {
     /**
      * 公告ID
      */
-    @TableId(type = IdType.AUTO)
-    @TableField("announce_id")
+    @TableId(value = "announce_id", type = IdType.AUTO)
     private Long announceId;
 
     /**

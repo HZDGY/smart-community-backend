@@ -18,7 +18,7 @@ public class PropertyFee {
     /**
      * 缴费ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "fee_id", type = IdType.AUTO)
     private Long fee_id;
 
     /**

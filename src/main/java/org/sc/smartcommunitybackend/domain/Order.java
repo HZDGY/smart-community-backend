@@ -18,7 +18,7 @@ public class Order {
     /**
      * 订单ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "order_id", type = IdType.AUTO)
     private Long order_id;
 
     /**

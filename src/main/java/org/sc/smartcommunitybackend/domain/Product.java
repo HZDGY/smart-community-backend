@@ -18,7 +18,7 @@ public class Product {
     /**
      * 商品ID
      */
-    @TableId(type = IdType.AUTO)
+    @TableId(value = "product_id", type = IdType.AUTO)
     private Long product_id;
 
     /**

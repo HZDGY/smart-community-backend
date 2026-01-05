@@ -17,8 +17,7 @@ public class VisitorRegister {
     /**
      * 登记ID
      */
-    @TableId(type = IdType.AUTO)
-    @TableField("register_id")
+    @TableId(value = "register_id", type = IdType.AUTO)
     private Long registerId;
 
     /**
