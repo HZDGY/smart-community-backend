@@ -68,4 +68,10 @@ public class RepairReport {
      */
     @TableField("handle_result")
     private String handleResult;
+
+    /**
+     * 报修地点
+     * */
+    @TableField("location")
+    private String location;
 }

@@ -7,12 +7,12 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 /**
- * 用户角色关联表
- * @TableName sys_user_role
+ * 角色权限关联表
+ * @TableName sys_role_permission
  */
-@TableName(value = "sys_user_role")
+@TableName(value = "sys_role_permission")
 @Data
-public class SysUserRole {
+public class SysRolePermission {
     /**
      * ID
      */
@@ -20,14 +20,14 @@ public class SysUserRole {
     private Long id;
 
     /**
-     * 用户ID
-     */
-    @TableField("user_id")
-    private Long userId;
-
-    /**
      * 角色ID
      */
     @TableField("role_id")
     private Long roleId;
+
+    /**
+     * 权限ID
+     */
+    @TableField("permission_id")
+    private Long permissionId;
 }
