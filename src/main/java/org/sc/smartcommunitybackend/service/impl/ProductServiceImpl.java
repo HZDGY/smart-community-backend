@@ -6,13 +6,15 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.sc.smartcommunitybackend.constant.ProductConstant;
 import org.sc.smartcommunitybackend.domain.Product;
+import org.sc.smartcommunitybackend.domain.ProductCategory;
 import org.sc.smartcommunitybackend.domain.ProductCollect;
+import org.sc.smartcommunitybackend.dto.request.AdminProductListRequest;
 import org.sc.smartcommunitybackend.dto.request.ProductListRequest;
-import org.sc.smartcommunitybackend.dto.response.PageResult;
-import org.sc.smartcommunitybackend.dto.response.ProductDetailVO;
-import org.sc.smartcommunitybackend.dto.response.ProductListItemVO;
-import org.sc.smartcommunitybackend.dto.response.StoreListItemVO;
+import org.sc.smartcommunitybackend.dto.request.ProductRequest;
+import org.sc.smartcommunitybackend.dto.response.*;
+import org.sc.smartcommunitybackend.service.ProductCategoryService;
 import org.sc.smartcommunitybackend.service.ProductCollectService;
 import org.sc.smartcommunitybackend.service.ProductService;
 import org.sc.smartcommunitybackend.mapper.ProductMapper;
@@ -36,10 +38,13 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
     implements ProductService{
+
     @Resource
     private StoreProductService storeProductService;
     @Resource
     private ProductCollectService productCollectService;
+    @Resource
+    private ProductCategoryService productCategoryService;
 
     /**
      * 商品列表
@@ -147,6 +152,107 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         List<StoreListItemVO> availableStores = storeProductService.getAvailableStores(productId);
         productDetailVO.setAvailableStores(availableStores);
         return productDetailVO;
+    }
+
+    /**
+     * 商品列表（管理员）
+     *
+     * @param adminProductListRequest
+     * @return
+     */
+    @Override
+    public PageResult<AdminProductVO> queryList(AdminProductListRequest adminProductListRequest) {
+        log.info("商品列表查询参数：{}", adminProductListRequest);
+        Long categoryId = adminProductListRequest.getCategoryId();
+        String keyword = adminProductListRequest.getKeyword();
+        Integer pageNum = adminProductListRequest.getPageNum();
+        Integer pageSize = adminProductListRequest.getPageSize();
+        // 创建查询条件
+        LambdaQueryWrapper<Product> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(categoryId != null && categoryId > 0, Product::getCategory_id, categoryId);
+        queryWrapper.like(StringUtils.hasText(keyword), Product::getProduct_name, keyword);
+        queryWrapper.orderByDesc(Product::getCreate_time);
+        // 设置默认分页参数
+        pageNum = (pageNum != null && pageNum > 0) ? pageNum : 1;
+        pageSize = (pageSize != null && pageSize > 0) ? pageSize : 10;
+
+        // 创建分页对象
+        Page<Product> page = new Page<>(pageNum, pageSize);
+
+        // 执行分页查询
+        Page<Product> resultPage = this.page(page, queryWrapper);
+
+        log.info("分页查询结果：{}", resultPage);
+        // 转换结果：将 Product 转换为 AdminProductVO
+        List<Product> records = resultPage.getRecords();
+        List<AdminProductVO> voList = records.stream().map(product -> {
+            AdminProductVO vo = new AdminProductVO();
+            vo.setProductId(product.getProduct_id());
+            vo.setProductName(product.getProduct_name());
+            vo.setCategoryId(product.getCategory_id());
+            ProductCategory category = productCategoryService.getById(product.getCategory_id());
+            vo.setCategoryName(category.getCategory_name());
+            vo.setDescription(product.getDescription());
+            vo.setPrice(product.getPrice());
+            vo.setStock(product.getStock());
+            vo.setCoverImg(product.getCover_img());
+            vo.setStatus(String.valueOf(product.getStatus()));
+            vo.setCreateTime(product.getCreate_time());
+            vo.setUpdateTime(product.getUpdate_time());
+            return vo;
+        }).collect(Collectors.toList());
+        // 创建分页结果对象
+        PageResult<AdminProductVO> pageResult = new PageResult<>();
+        pageResult.setList(voList);
+        pageResult.setTotal(resultPage.getTotal());
+        pageResult.setPages(resultPage.getPages());
+        return pageResult;
+    }
+
+    /**
+     * 添加商品
+     *
+     * @param productRequest
+     */
+    @Override
+    public void add(ProductRequest productRequest) {
+        log.info("添加商品：{}", productRequest);
+        String productName = productRequest.getProductName();
+        Long categoryId = productRequest.getCategoryId();
+        BigDecimal price = productRequest.getPrice();
+        Integer stock = productRequest.getStock();
+        String coverImg = productRequest.getCoverImg();
+        String status = productRequest.getStatus();
+        if(productName == null || productName.trim().isEmpty()){
+            throw new RuntimeException("商品名称不能为空");
+        }
+        if(categoryId == null || categoryId <= 0){
+            throw new RuntimeException("商品分类ID不能为空");
+        }
+        if(price == null || price.compareTo(BigDecimal.ZERO) <= 0){
+            throw new RuntimeException("商品价格不能为空");
+        }
+        if(stock == null || stock < 0){
+            throw new RuntimeException("商品库存不能为空");
+        }
+        if(coverImg == null || coverImg.trim().isEmpty()){
+            throw new RuntimeException("商品封面图不能为空");
+        }
+        status = status == null ? ProductConstant.STATUS_STR_OFF_SALE : status;
+        if(!ProductConstant.STATUS_STR_OFF_SALE.equals(status) && !ProductConstant.STATUS_STR_ON_SALE.equals(status)){
+            throw new RuntimeException("商品状态错误");
+        }
+        Product product = new Product();
+        product.setProduct_name(productName);
+        product.setCategory_id(categoryId);
+        product.setPrice(price);
+        product.setStock(stock);
+        product.setCover_img(coverImg);
+        product.setStatus( ProductConstant.STATUS_STR_OFF_SALE.equals(status) ? ProductConstant.STATUS_OFF_SALE : ProductConstant.STATUS_ON_SALE);
+        boolean b = this.save(product);
+        if(!b){
+            throw new RuntimeException("添加商品失败");
+        }
     }
 
 

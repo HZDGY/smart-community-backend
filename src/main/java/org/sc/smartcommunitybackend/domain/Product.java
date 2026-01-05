@@ -50,6 +50,10 @@ public class Product {
      * 状态 0-下架 1-上架
      */
     private Integer status;
+    /**
+     * 库存
+     */
+    private Integer stock;
 
     /**
      * 创建时间

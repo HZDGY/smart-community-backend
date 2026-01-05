@@ -1,7 +1,7 @@
 package org.sc.smartcommunitybackend.constant;
 
 /**
- * 商品相关常量
+ * 商品相关常量，要默认下架
  */
 public class ProductConstant {
 
@@ -14,6 +14,7 @@ public class ProductConstant {
      * 商品状态 - 上架
      */
     public static final Integer STATUS_ON_SALE = 1;
+
 
     /**
      * 商品状态字符串 - 下架

@@ -2,7 +2,10 @@ package org.sc.smartcommunitybackend.service;
 
 import org.sc.smartcommunitybackend.domain.Product;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.sc.smartcommunitybackend.dto.request.AdminProductListRequest;
 import org.sc.smartcommunitybackend.dto.request.ProductListRequest;
+import org.sc.smartcommunitybackend.dto.request.ProductRequest;
+import org.sc.smartcommunitybackend.dto.response.AdminProductVO;
 import org.sc.smartcommunitybackend.dto.response.PageResult;
 import org.sc.smartcommunitybackend.dto.response.ProductDetailVO;
 import org.sc.smartcommunitybackend.dto.response.ProductListItemVO;
@@ -19,4 +22,7 @@ public interface ProductService extends IService<Product> {
     ProductDetailVO detail(Long productId);
 
 
+    PageResult<AdminProductVO> queryList(AdminProductListRequest adminProductListRequest);
+
+    void add(ProductRequest productRequest);
 }
