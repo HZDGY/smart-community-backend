@@ -37,7 +37,10 @@ public class ComplaintResponse {
     
     @Schema(description = "投诉描述", example = "楼上住户深夜装修，噪音严重影响休息")
     private String description;
-    
+
+
+    @Schema(description = "投诉位置", example = "3号楼2单元1002")
+    private String location;
     @Schema(
         description = "处理状态", 
         example = "2",

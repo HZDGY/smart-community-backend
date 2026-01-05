@@ -105,10 +105,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
             vo.setCoverImg(product.getCover_img());
             // 设置是否已收藏（根据用户ID和商品ID查询收藏状态）
             Long currentUserId = UserContextUtil.getCurrentUserId();
-            if (currentUserId != null) {
+            if (currentUserId != null && product.getProduct_id() != null) {
                 // 查询用户收藏状态
                 ProductCollect byUserIdAndProductId = productCollectService.getByUserIdAndProductId(currentUserId, product.getProduct_id());
                 vo.setIsCollected(byUserIdAndProductId != null);
+            } else {
+                vo.setIsCollected(false);
             }
             return vo;
         }).collect(Collectors.toList());
@@ -143,10 +145,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         productDetailVO.setCoverImg(product.getCover_img());
         // 设置是否已收藏
         Long currentUserId = UserContextUtil.getCurrentUserId();
-        if (currentUserId != null) {
+        if (currentUserId != null && productId != null) {
             // 获取用户收藏状态
             ProductCollect byUserIdAndProductId = productCollectService.getByUserIdAndProductId(currentUserId, productId);
             productDetailVO.setIsCollected(byUserIdAndProductId != null);
+        } else {
+            productDetailVO.setIsCollected(false);
         }
         // 获取可售门店列表
         List<StoreListItemVO> availableStores = storeProductService.getAvailableStores(productId);

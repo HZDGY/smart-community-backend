@@ -68,4 +68,10 @@ public class Complaint {
      */
     @TableField("handle_result")
     private String handleResult;
+
+    /**
+     * 投诉位置
+     * */
+    @TableField("location")
+    private String location;
 }
