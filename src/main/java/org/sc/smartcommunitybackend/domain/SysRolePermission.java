@@ -1,7 +1,6 @@
 package org.sc.smartcommunitybackend.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
@@ -22,12 +21,10 @@ public class SysRolePermission {
     /**
      * 角色ID
      */
-    @TableField("role_id")
-    private Long roleId;
+    private Long role_id;
 
     /**
      * 权限ID
      */
-    @TableField("permission_id")
-    private Long permissionId;
+    private Long permission_id;
 }

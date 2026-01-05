@@ -1,7 +1,6 @@
 package org.sc.smartcommunitybackend.domain;
 
 import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.util.Date;
@@ -18,14 +17,12 @@ public class SysUser {
      * 用户ID
      */
     @TableId(type = IdType.AUTO)
-    @TableField("user_id")
-    private Long userId;
+    private Long user_id;
 
     /**
      * 用户名
      */
-    @TableField("user_name")
-    private String userName;
+    private String user_name;
 
     /**
      * 手机号
@@ -60,8 +57,7 @@ public class SysUser {
     /**
      * 用户类型 1-普通用户 2-商户管理员 3-社区管理员
      */
-    @TableField("user_type")
-    private Integer userType;
+    private Integer user_type;
 
     /**
      * 状态 0-冻结 1-正常
@@ -71,12 +67,10 @@ public class SysUser {
     /**
      * 创建时间
      */
-    @TableField("create_time")
-    private Date createTime;
+    private Date create_time;
 
     /**
      * 更新时间
      */
-    @TableField("update_time")
-    private Date updateTime;
+    private Date update_time;
 }
