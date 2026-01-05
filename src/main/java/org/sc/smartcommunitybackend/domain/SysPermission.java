@@ -9,33 +9,39 @@ import lombok.Data;
 import java.util.Date;
 
 /**
- * 系统角色表
- * @TableName sys_role
+ * 系统权限表
+ * @TableName sys_permission
  */
-@TableName(value = "sys_role")
+@TableName(value = "sys_permission")
 @Data
-public class SysRole {
+public class SysPermission {
     /**
-     * 角色ID
+     * 权限ID
      */
     @TableId(type = IdType.AUTO)
-    @TableField("role_id")
-    private Long roleId;
+    @TableField("permission_id")
+    private Long permissionId;
 
     /**
-     * 角色名称
+     * 权限名称
      */
-    @TableField("role_name")
-    private String roleName;
+    @TableField("permission_name")
+    private String permissionName;
 
     /**
-     * 角色编码（如：ROLE_ADMIN）
+     * 权限编码（如：user:create）
      */
-    @TableField("role_code")
-    private String roleCode;
+    @TableField("permission_code")
+    private String permissionCode;
 
     /**
-     * 角色描述
+     * 资源类型（menu-菜单 button-按钮 api-接口）
+     */
+    @TableField("resource_type")
+    private String resourceType;
+
+    /**
+     * 权限描述
      */
     @TableField("description")
     private String description;

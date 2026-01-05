@@ -82,6 +82,7 @@ public class RepairReportController extends BaseController {
                     {
                       "reportType": "水电维修",
                       "description": "厨房水龙头漏水，需要尽快维修"
+                      "location":"23号楼4单元201"
                     }
                     """
                 ),
@@ -91,6 +92,7 @@ public class RepairReportController extends BaseController {
                     {
                       "reportType": "电梯故障",
                       "description": "3号楼电梯按钮失灵，无法正常使用"
+                      "location":"23号楼4单元201"
                     }
                     """
                 ),
@@ -100,6 +102,7 @@ public class RepairReportController extends BaseController {
                     {
                       "reportType": "门窗维修",
                       "description": "卧室窗户关不严，漏风严重"
+                      "location":"23号楼4单元201"
                     }
                     """
                 )
@@ -135,6 +138,7 @@ public class RepairReportController extends BaseController {
                             "userId": 1,
                             "reportType": "水电维修",
                             "description": "厨房水龙头漏水，需要维修",
+                            "location":"23号楼4单元201",
                             "status": 0,
                             "statusText": "待处理",
                             "createTime": "2026-01-04 09:00:00",
@@ -147,6 +151,7 @@ public class RepairReportController extends BaseController {
                             "userId": 1,
                             "reportType": "门窗维修",
                             "description": "卧室窗户关不严，漏风严重",
+                            "location":"23号楼4单元201",
                             "status": 2,
                             "statusText": "已完成",
                             "createTime": "2026-01-02 10:15:00",
@@ -216,6 +221,7 @@ public class RepairReportController extends BaseController {
                         "userId": 1,
                         "reportType": "水电维修",
                         "description": "厨房水龙头漏水，需要维修",
+                        "location":"23号楼4单元201",
                         "status": 2,
                         "statusText": "已完成",
                         "createTime": "2026-01-02 10:15:00",

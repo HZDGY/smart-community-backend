@@ -37,6 +37,17 @@ public class GlobalExceptionHandler {
     }
 
     /**
+     * 处理权限不足异常
+     */
+    @ExceptionHandler(PermissionDeniedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public Result<Void> handlePermissionDeniedException(PermissionDeniedException e) {
+        logger.warn("权限不足: {}", e.getMessage());
+        return Result.error(403, e.getMessage());
+    }
+
+
+    /**
      * 处理参数校验异常（@RequestBody）
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)

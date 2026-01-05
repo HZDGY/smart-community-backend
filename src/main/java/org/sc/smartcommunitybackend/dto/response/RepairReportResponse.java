@@ -37,7 +37,9 @@ public class RepairReportResponse {
     
     @Schema(description = "事项描述", example = "厨房水龙头漏水，需要维修")
     private String description;
-    
+
+    @Schema(description = "报修地点", example = "21号楼2单元201")
+    private String location;
     @Schema(
         description = "处理状态", 
         example = "2",

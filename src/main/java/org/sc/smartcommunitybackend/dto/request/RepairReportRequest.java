@@ -37,5 +37,13 @@ public class RepairReportRequest {
     @NotBlank(message = "事项描述不能为空")
     @Size(min = 5, max = 500, message = "事项描述长度应在5-500个字符之间")
     private String description;
+
+    @Schema(
+            description = "报修位置",
+            example = "61栋2单元2304",
+            requiredMode = Schema.RequiredMode.REQUIRED
+    )
+    @NotBlank
+    private String location;
 }
 

@@ -30,6 +30,7 @@ public class RepairReportServiceImpl extends ServiceImpl<RepairReportMapper, Rep
         repairReport.setUserId(userId);
         repairReport.setReportType(request.getReportType());
         repairReport.setDescription(request.getDescription());
+        repairReport.setLocation(request.getLocation());
         repairReport.setStatus(RepairReportConstant.STATUS_PENDING);
         repairReport.setCreateTime(new Date());
         
