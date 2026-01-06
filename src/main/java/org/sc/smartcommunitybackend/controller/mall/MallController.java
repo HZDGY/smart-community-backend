@@ -65,4 +65,5 @@ public class MallController {
         productCollectService.cancelCollect(productId);
         return success();
     }
+
 }

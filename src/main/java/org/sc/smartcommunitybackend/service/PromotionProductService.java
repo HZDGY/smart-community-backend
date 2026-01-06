@@ -1,7 +1,10 @@
 package org.sc.smartcommunitybackend.service;
 
+import org.sc.smartcommunitybackend.domain.Product;
 import org.sc.smartcommunitybackend.domain.PromotionProduct;
 import com.baomidou.mybatisplus.extension.service.IService;
+
+import java.util.List;
 
 /**
 * @author 吴展德
@@ -10,4 +13,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface PromotionProductService extends IService<PromotionProduct> {
 
+    void updateByPromotionId(Long promotionId, List<Long> productIds);
+
+    void bindProducts(Long promotionId, List<Long> productIds);
 }

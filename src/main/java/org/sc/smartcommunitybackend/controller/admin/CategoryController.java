@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RestController
+@RestController("AdminCategoryController")
 @RequestMapping("/admin/product-categories")
 @Tag(name = "管理端-商品分类管理")
 @Slf4j

@@ -25,4 +25,8 @@ public interface ProductService extends IService<Product> {
     PageResult<AdminProductVO> queryList(AdminProductListRequest adminProductListRequest);
 
     void add(ProductRequest productRequest);
+
+    void updateProduct(Long productId, ProductRequest productRequest);
+
+    Long delete(Long productId);
 }

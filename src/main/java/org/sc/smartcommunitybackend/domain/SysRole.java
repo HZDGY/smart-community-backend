@@ -18,7 +18,8 @@ public class SysRole {
     /**
      * 角色ID
      */
-    @TableId(value = "role_id", type = IdType.AUTO)
+    @TableId(type = IdType.AUTO)
+    @TableField("role_id")
     private Long roleId;
 
     /**

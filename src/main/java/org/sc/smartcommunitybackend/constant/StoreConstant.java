@@ -1,5 +1,7 @@
 package org.sc.smartcommunitybackend.constant;
 
+import org.sc.smartcommunitybackend.common.enums.StoreStatusEnum;
+
 /**
  * 门店相关常量
  */
@@ -8,12 +10,12 @@ public class StoreConstant {
     /**
      * 门店状态 - 关闭
      */
-    public static final Integer STATUS_CLOSED = 0;
+    public static final Integer STATUS_CLOSED = StoreStatusEnum.CLOSED.getCode();
 
     /**
      * 门店状态 - 正常
      */
-    public static final Integer STATUS_NORMAL = 1;
+    public static final Integer STATUS_NORMAL = StoreStatusEnum.NORMAL.getCode();
 
     /**
      * 门店状态字符串 - 关闭

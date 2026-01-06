@@ -259,6 +259,67 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         }
     }
 
+    /**
+     * 修改商品
+     *
+     * @param productId
+     * @param productRequest
+     */
+    @Override
+    public void updateProduct(Long productId, ProductRequest productRequest) {
+        log.info("修改商品：{}", productRequest);
+        if (productId == null || productId <= 0){
+            throw new RuntimeException("商品ID不能为空");
+        }
+        String productName = productRequest.getProductName();
+        Long categoryId = productRequest.getCategoryId();
+        BigDecimal price = productRequest.getPrice();
+        BigDecimal originalPrice = productRequest.getOriginalPrice();
+        Integer stock = productRequest.getStock();
+        String coverImg = productRequest.getCoverImg();
+        List<String> detailImgs = productRequest.getDetailImgs();
+        String description = productRequest.getDescription();
+        String status = productRequest.getStatus();
+        boolean update = lambdaUpdate().eq(Product::getProduct_id, productId)
+                .set(productName != null && !productName.trim().isEmpty(), Product::getProduct_name, productName)
+                .set(categoryId != null && categoryId > 0, Product::getCategory_id, categoryId)
+                .set(price != null && price.compareTo(BigDecimal.ZERO) > 0, Product::getPrice, price)
+                .set(stock != null && stock > 0, Product::getStock, stock)
+                .set(coverImg != null && !coverImg.trim().isEmpty(), Product::getCover_img, coverImg)
+                .set(description != null && !description.trim().isEmpty(), Product::getDescription, description)
+                .set(status != null && !status.trim().isEmpty(), Product::getStatus, status)
+                .update();
+        if(!update){
+            throw new RuntimeException("修改商品失败");
+        }
+    }
+
+    /**
+     * 删除商品
+     *
+     * @param productId
+     * @return
+     */
+    @Override
+    public Long delete(Long productId) {
+       log.info("删除商品：{}", productId);
+       if (productId == null || productId <= 0){
+           throw new RuntimeException("商品ID不能为空");
+       }
+        Product product = baseMapper.selectById(productId);
+       if (product == null){
+           throw new RuntimeException("商品不存在");
+       }
+       if (product.getStatus() == ProductConstant.STATUS_ON_SALE){
+           throw new RuntimeException("商品正在销售中，请先下架");
+       }
+       boolean delete = this.removeById(productId);
+       if(!delete){
+           throw new RuntimeException("删除商品失败");
+       }
+       return productId;
+    }
+
 
 }
 

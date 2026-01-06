@@ -45,6 +45,11 @@ public class Store {
     private String contact_phone;
 
     /**
+     * 状态 0-关闭 1-正常营业
+     */
+    private Integer status;
+
+    /**
      * 创建时间
      */
     private Date create_time;
