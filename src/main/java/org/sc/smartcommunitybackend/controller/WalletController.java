@@ -6,10 +6,14 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.sc.smartcommunitybackend.common.Result;
 import org.sc.smartcommunitybackend.common.annotation.RequirePermission;
+import org.sc.smartcommunitybackend.domain.PaymentOrder;
 import org.sc.smartcommunitybackend.domain.UserWallet;
 import org.sc.smartcommunitybackend.domain.WalletTransaction;
 import org.sc.smartcommunitybackend.dto.request.RechargeRequest;
 import org.sc.smartcommunitybackend.dto.request.TransferRequest;
+import org.sc.smartcommunitybackend.dto.response.PaymentResponse;
+import org.sc.smartcommunitybackend.enums.OrderType;
+import org.sc.smartcommunitybackend.service.PaymentService;
 import org.sc.smartcommunitybackend.service.WalletService;
 import org.sc.smartcommunitybackend.util.UserContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +32,9 @@ public class WalletController extends BaseController {
     @Autowired
     private WalletService walletService;
     
+    @Autowired
+    private PaymentService paymentService;
+    
     @GetMapping("/info")
     @Operation(summary = "获取钱包信息", description = "查询当前用户的钱包信息")
 //    @RequirePermission("wallet:view")
@@ -38,18 +45,27 @@ public class WalletController extends BaseController {
     }
     
     @PostMapping("/recharge")
-    @Operation(summary = "充值", description = "向钱包充值")
+    @Operation(summary = "充值", description = "创建充值订单")
 //    @RequirePermission("wallet:recharge")
-    public Result<WalletTransaction> recharge(
+    public Result<PaymentResponse> recharge(
             @Parameter(description = "充值请求", required = true)
             @RequestBody @Valid RechargeRequest request) {
         Long userId = UserContextUtil.getCurrentUserId();
-        WalletTransaction transaction = walletService.recharge(
-                userId, 
-                request.getAmount(), 
-                request.getPaymentMethod()
+        
+        // 创建支付订单
+        PaymentOrder order = paymentService.createPaymentOrder(
+                userId,
+                OrderType.RECHARGE.getCode(),
+                request.getAmount(),
+                request.getPaymentMethod(),
+                null,
+                "钱包充值"
         );
-        return success("充值成功", transaction);
+        
+        // 发起支付
+        PaymentResponse response = paymentService.initiatePayment(order.getOrderNo());
+        
+        return success("充值订单已创建，请完成支付", response);
     }
     
     @PostMapping("/transfer")

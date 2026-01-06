@@ -140,7 +140,7 @@ public class PropertyFeeServiceImpl implements PropertyFeeService {
         
         WalletTransaction walletTransaction = null;
         
-        // 钱包支付
+        // 钱包支付 - 直接扣款
         if (PaymentMethod.WALLET.name().equals(paymentMethod)) {
             // 使用钱包支付
             walletTransaction = walletService.payment(
@@ -149,10 +149,13 @@ public class PropertyFeeServiceImpl implements PropertyFeeService {
                 bill.getBillNo(), 
                 "缴纳物业费 - " + bill.getBillingPeriod()
             );
+        } else {
+            // 支付宝或微信支付 - 需要创建支付订单
+            // 注意：这里只是创建订单，实际支付成功后需要通过回调更新账单状态
+            throw new BusinessException("请使用支付接口创建支付订单，订单类型为PROPERTY_FEE");
         }
-        // 其他支付方式（支付宝、微信）这里暂时模拟成功
         
-        // 更新账单
+        // 更新账单（仅钱包支付时）
         BigDecimal newPaidAmount = bill.getPaidAmount().add(amount);
         bill.setPaidAmount(newPaidAmount);
         

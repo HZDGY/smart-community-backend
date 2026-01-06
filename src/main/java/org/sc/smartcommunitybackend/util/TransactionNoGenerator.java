@@ -43,4 +43,15 @@ public class TransactionNoGenerator {
         String random = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
         return "PAY" + timestamp + random;
     }
+    
+    /**
+     * 生成支付订单号
+     * 格式：ORDER + 时间戳 + 随机数
+     * 例如：ORDER20260106101500A1B2C3D4
+     */
+    public static String generatePaymentOrderNo() {
+        String timestamp = LocalDateTime.now().format(FORMATTER);
+        String random = UUID.randomUUID().toString().replace("-", "").substring(0, 8).toUpperCase();
+        return "ORDER" + timestamp + random;
+    }
 }
