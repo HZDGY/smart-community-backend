@@ -60,4 +60,5 @@ public class MallController {
     public void cancelCollect(@PathVariable Long productId) {
         productCollectService.cancelCollect(productId);
     }
+
 }
