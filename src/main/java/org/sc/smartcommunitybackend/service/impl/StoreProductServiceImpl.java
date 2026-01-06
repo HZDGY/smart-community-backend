@@ -10,6 +10,8 @@ import org.sc.smartcommunitybackend.domain.ProductCollect;
 import org.sc.smartcommunitybackend.domain.Store;
 import org.sc.smartcommunitybackend.domain.StoreProduct;
 import org.sc.smartcommunitybackend.dto.request.StoreListRequest;
+import org.sc.smartcommunitybackend.dto.request.StoreProductStatusRequest;
+import org.sc.smartcommunitybackend.dto.request.StoreProductStockRequest;
 import org.sc.smartcommunitybackend.dto.response.StoreListItemVO;
 import org.sc.smartcommunitybackend.dto.response.StoreVO;
 import org.sc.smartcommunitybackend.service.StoreProductService;
@@ -109,6 +111,62 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductMapper, Sto
             storeListItemVOS.add(vo);
         }
         return storeListItemVOS;
+    }
+
+    /**
+     * 门店商品上下架
+     * @param storeProductId
+     * @param status
+     * @return
+     */
+    @Override
+    public boolean updateStoreProductStatus(Long storeProductId, StoreProductStatusRequest status) {
+        log.info("门店商品上下架参数：{}", status);
+        if(storeProductId == null && storeProductId<=0){
+            throw new RuntimeException("门店商品ID不能为空");
+        }
+        if ( status == null){
+            throw new RuntimeException("门店商品状态不能为空");
+        }
+        StoreProduct storeProduct = this.getById(storeProductId);
+        if (storeProduct == null){
+            throw new RuntimeException("门店商品不存在");
+        }
+        boolean update = lambdaUpdate().eq(StoreProduct::getId, storeProductId)
+                .set(StoreProduct::getStatus, status.getStatus())
+                .update();
+        if (!update){
+            throw new RuntimeException("修改门店商品状态失败");
+        }
+        return update;
+    }
+
+    /**
+     * 门店商品库存分配
+     * @param storeProductId
+     * @param stock
+     * @return
+     */
+    @Override
+    public boolean updateStoreProductStock(Long storeProductId, StoreProductStockRequest stock) {
+        log.info("门店商品库存分配参数：{}", stock);
+        if(storeProductId == null && storeProductId<=0){
+            throw new RuntimeException("门店商品ID不能为空");
+        }
+        if ( stock == null || stock.getStock()==0){
+            throw new RuntimeException("门店商品库存不能为空或者小于0");
+        }
+        StoreProduct storeProduct = this.getById(storeProductId);
+        if (storeProduct == null){
+            throw new RuntimeException("门店商品不存在");
+        }
+        boolean update = lambdaUpdate().eq(StoreProduct::getId, storeProductId)
+                .set(StoreProduct::getStock, stock.getStock())
+                .update();
+        if (!update){
+            throw new RuntimeException("修改门店商品库存失败");
+        }
+        return update;
     }
 }
 
