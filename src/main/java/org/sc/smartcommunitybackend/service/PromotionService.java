@@ -2,6 +2,10 @@ package org.sc.smartcommunitybackend.service;
 
 import org.sc.smartcommunitybackend.domain.Promotion;
 import com.baomidou.mybatisplus.extension.service.IService;
+import org.sc.smartcommunitybackend.dto.request.PromotionPageRequest;
+import org.sc.smartcommunitybackend.dto.request.PromotionRequest;
+import org.sc.smartcommunitybackend.dto.response.PageResult;
+import org.sc.smartcommunitybackend.dto.response.PromotionVO;
 
 /**
 * @author 吴展德
@@ -10,4 +14,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
 */
 public interface PromotionService extends IService<Promotion> {
 
+    PageResult<PromotionVO> queryList(PromotionPageRequest promotionPageRequest);
+
+    Long add(PromotionRequest promotionRequest);
+
+    Boolean updatePromotion(Long promotionId,PromotionRequest promotionRequest);
+
+    Boolean delete(Long promotionId);
 }
