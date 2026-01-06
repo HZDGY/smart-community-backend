@@ -20,4 +20,6 @@ public class StoreVO extends BaseResponse {
 
     @Schema(description = "联系电话")
     private String contactPhone;
+    @Schema(description = "状态 0-关闭 1-正常营业")
+    private Integer status;
 }
