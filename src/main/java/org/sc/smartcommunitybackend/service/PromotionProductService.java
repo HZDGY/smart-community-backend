@@ -14,4 +14,6 @@ import java.util.List;
 public interface PromotionProductService extends IService<PromotionProduct> {
 
     void updateByPromotionId(Long promotionId, List<Long> productIds);
+
+    void bindProducts(Long promotionId, List<Long> productIds);
 }

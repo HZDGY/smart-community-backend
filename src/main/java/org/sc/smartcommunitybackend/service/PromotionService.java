@@ -7,6 +7,8 @@ import org.sc.smartcommunitybackend.dto.request.PromotionRequest;
 import org.sc.smartcommunitybackend.dto.response.PageResult;
 import org.sc.smartcommunitybackend.dto.response.PromotionVO;
 
+import java.util.List;
+
 /**
 * @author 吴展德
 * @description 针对表【promotion(促销活动表)】的数据库操作Service
@@ -21,4 +23,6 @@ public interface PromotionService extends IService<Promotion> {
     Boolean updatePromotion(Long promotionId,PromotionRequest promotionRequest);
 
     Boolean delete(Long promotionId);
+
+
 }

@@ -3,6 +3,7 @@ package org.sc.smartcommunitybackend.service.impl;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.extern.slf4j.Slf4j;
 import org.sc.smartcommunitybackend.domain.PromotionProduct;
+import org.sc.smartcommunitybackend.exception.BusinessException;
 import org.sc.smartcommunitybackend.service.PromotionProductService;
 import org.sc.smartcommunitybackend.mapper.PromotionProductMapper;
 import org.springframework.stereotype.Service;
@@ -48,6 +49,35 @@ public class PromotionProductServiceImpl extends ServiceImpl<PromotionProductMap
             }
         }else {
             log.info("无商品关联");
+        }
+
+    }
+
+    /**
+     * 绑定促销商品
+     *
+     * @param promotionId
+     * @param productIds
+     * @return
+     */
+    @Transactional
+    @Override
+    public void bindProducts(Long promotionId, List<Long> productIds) {
+        log.info("绑定促销商品参数：{},{}", promotionId, productIds);
+        if (promotionId == null || promotionId <= 0){
+            throw new BusinessException("促销ID不能为空");
+        }
+        if (productIds == null || productIds.isEmpty() || productIds.size() <= 0){
+            throw new BusinessException("商品ID不能为空");
+        }
+        for (Long productId : productIds) {
+            PromotionProduct promotionProduct = new PromotionProduct();
+            promotionProduct.setPromotion_id(promotionId);
+            promotionProduct.setProduct_id(productId);
+            boolean b = save(promotionProduct);
+            if (!b){
+                throw new BusinessException("绑定促销商品失败");
+            }
         }
 
     }

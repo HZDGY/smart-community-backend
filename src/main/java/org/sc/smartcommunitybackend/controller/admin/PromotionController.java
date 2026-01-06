@@ -6,17 +6,23 @@ import jakarta.annotation.Resource;
 import org.sc.smartcommunitybackend.common.Result;
 import org.sc.smartcommunitybackend.common.annotation.RequirePermission;
 import org.sc.smartcommunitybackend.dto.request.PromotionPageRequest;
+import org.sc.smartcommunitybackend.dto.request.PromotionProductAddRequest;
 import org.sc.smartcommunitybackend.dto.request.PromotionRequest;
 import org.sc.smartcommunitybackend.dto.response.AdminProductVO;
 import org.sc.smartcommunitybackend.dto.response.PageResult;
 import org.sc.smartcommunitybackend.dto.response.PromotionVO;
+import org.sc.smartcommunitybackend.service.PromotionProductService;
 import org.sc.smartcommunitybackend.service.PromotionService;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/admin/promotions")
 @Tag(name = "管理端-营销管理接口")
 public class PromotionController {
+    @Resource
+    PromotionProductService promotionProductService;
     @Resource
     private PromotionService promotionService;
 
@@ -43,5 +49,12 @@ public class PromotionController {
     @Operation(summary = "删除营销")
     private Result<Boolean> delete(@PathVariable Long promotionId) {
         return Result.success(promotionService.delete(promotionId));
+    }
+    @PostMapping("/{promotionId}/products")
+    @Operation(summary = "为促销绑定商品")
+    private Result<Void> bindProducts(@PathVariable Long promotionId, @RequestBody PromotionProductAddRequest promotionProductAddRequest) {
+        List<Long> productIds = promotionProductAddRequest.getProductIds();
+        promotionProductService.bindProducts(promotionId,productIds);
+        return Result.success();
     }
 }
