@@ -72,6 +72,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
      */
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // 上传文件的静态资源映射（使用绝对路径）
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:E:/Project/smart-community-backend/uploads/");
+        
         // Knife4j 文档静态资源
         registry.addResourceHandler("/doc.html")
                 .addResourceLocations("classpath:/META-INF/resources/");

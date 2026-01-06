@@ -30,6 +30,9 @@ public class FileUploadUtil {
 
     @Value("${server.port:8080}")
     private String serverPort;
+    
+    @Value("${server.servlet.context-path:}")
+    private String contextPath;
 
     /**
      * 上传文件
@@ -76,8 +79,8 @@ public class FileUploadUtil {
             Files.write(path, file.getBytes());
 
             // 返回访问URL
-            // 格式：http://localhost:8080/uploads/avatar/yyyyMMdd/filename.jpg
-            String fileUrl = "http://localhost:" + serverPort + "/uploads/" + 
+            // 格式：http://localhost:8080/api/uploads/avatar/yyyyMMdd/filename.jpg
+            String fileUrl = "http://localhost:" + serverPort + contextPath + "/uploads/" + 
                             subDir + "/" + datePath + "/" + newFilename;
             
             return fileUrl;

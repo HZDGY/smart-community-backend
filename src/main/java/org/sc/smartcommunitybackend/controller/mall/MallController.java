@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.sc.smartcommunitybackend.common.Result;
 import org.sc.smartcommunitybackend.dto.request.ProductListRequest;
 import org.sc.smartcommunitybackend.dto.request.StoreListRequest;
 import org.sc.smartcommunitybackend.dto.response.PageResult;
@@ -19,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.sc.smartcommunitybackend.common.Result.success;
+
 @RestController
 @RequestMapping("/mall")
 @Tag(name = "商品接口")
@@ -32,32 +35,34 @@ public class MallController {
     private ProductCollectService productCollectService;
     @PostMapping("/list")
     @Operation(summary = "商品列表")
-    public PageResult<ProductListItemVO> list(@RequestBody ProductListRequest  productListRequest) {
+    public Result<PageResult<ProductListItemVO>> list(@RequestBody ProductListRequest  productListRequest) {
         PageResult<ProductListItemVO> productListItemVOPageResult = productService.queryList(productListRequest);
-        return productListItemVOPageResult;
+        return success(productListItemVOPageResult);
     }
 
     @Operation(summary = "查询商品详情")
     @GetMapping("/products/{productId}")
-    public ProductDetailVO detail(@PathVariable Long productId) {
+    public Result<ProductDetailVO> detail(@PathVariable Long productId) {
         ProductDetailVO productListItemVO = productService.detail(productId);
-        return productListItemVO;
+        return success(productListItemVO);
     }
 
     @Operation(summary = "查询商品可自提门店列表")
     @PostMapping("/stores")
-    public List<StoreVO> stores(@RequestBody StoreListRequest storeListRequest) {
-        return storeProductService.queryList(storeListRequest);
+    public Result<List<StoreVO>> stores(@RequestBody StoreListRequest storeListRequest) {
+        return success(storeProductService.queryList(storeListRequest));
     }
 
     @Operation(summary = "收藏商品")
     @PostMapping("/products/{productId}/collect")
-    public void collect(@PathVariable Long productId) {
+    public Result collect(@PathVariable Long productId) {
         productCollectService.collect(productId);
+        return success();
     }
     @Operation(summary = "取消收藏商品")
     @DeleteMapping("/products/{productId}/collect")
-    public void cancelCollect(@PathVariable Long productId) {
+    public Result cancelCollect(@PathVariable Long productId) {
         productCollectService.cancelCollect(productId);
+        return success();
     }
 }

@@ -61,6 +61,14 @@ public class ProductCollectServiceImpl extends ServiceImpl<ProductCollectMapper,
         if (currentUserId == null) {
             throw new RuntimeException("用户未登录");
         }
+        
+        // 检查是否已经收藏
+        ProductCollect existingCollect = getByUserIdAndProductId(currentUserId, productId);
+        if (existingCollect != null) {
+            log.warn("用户 {} 已经收藏过商品 {}", currentUserId, productId);
+            throw new RuntimeException("您已经收藏过该商品");
+        }
+        
         ProductCollect productCollect = new ProductCollect();
         productCollect.setUser_id(currentUserId);
         productCollect.setProduct_id(productId);

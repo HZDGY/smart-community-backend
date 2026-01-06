@@ -4,6 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.sc.smartcommunitybackend.common.annotation.Logical;
+import org.sc.smartcommunitybackend.common.annotation.RequirePermission;
+import org.sc.smartcommunitybackend.common.annotation.RequireRole;
 import org.sc.smartcommunitybackend.dto.request.AdminProductListRequest;
 import org.sc.smartcommunitybackend.dto.request.ProductListRequest;
 import org.sc.smartcommunitybackend.dto.request.ProductRequest;
@@ -45,6 +48,8 @@ public class MallController {
         return storeProductService.queryList(storeListRequest);
     }
 
+//    @RequireRole(value = {"ROLE_SUPER_ADMIN", "ROLE_MERCHANT_ADMIN"}, logical = Logical.OR)
+    @RequirePermission("mall:create")
     @Operation(summary = "新增商品")
     @PostMapping
     public void add(@RequestBody ProductRequest productRequest) {

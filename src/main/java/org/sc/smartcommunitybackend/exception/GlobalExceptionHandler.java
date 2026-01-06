@@ -11,6 +11,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import jakarta.validation.ConstraintViolation;
@@ -84,6 +85,21 @@ public class GlobalExceptionHandler {
                 .map(ConstraintViolation::getMessage)
                 .collect(Collectors.joining(", "));
         logger.warn("参数校验异常: {}", message);
+        return Result.error(ResultCode.PARAM_ERROR.getCode(), message);
+    }
+
+    /**
+     * 处理参数类型转换异常（@RequestParam、@PathVariable）
+     */
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Result<Void> handleMethodArgumentTypeMismatchException(MethodArgumentTypeMismatchException e) {
+        String paramName = e.getName();
+        String requiredType = e.getRequiredType() != null ? e.getRequiredType().getSimpleName() : "未知类型";
+        String providedValue = e.getValue() != null ? e.getValue().toString() : "null";
+        String message = String.format("参数 '%s' 的值 '%s' 无法转换为所需的类型 %s", 
+                                      paramName, providedValue, requiredType);
+        logger.warn("参数类型转换异常: {}", message);
         return Result.error(ResultCode.PARAM_ERROR.getCode(), message);
     }
 
