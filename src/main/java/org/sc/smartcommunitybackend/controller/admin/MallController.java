@@ -4,7 +4,9 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
-import org.sc.smartcommunitybackend.common.Result;
+import org.sc.smartcommunitybackend.common.annotation.Logical;
+import org.sc.smartcommunitybackend.common.annotation.RequirePermission;
+import org.sc.smartcommunitybackend.common.annotation.RequireRole;
 import org.sc.smartcommunitybackend.dto.request.AdminProductListRequest;
 import org.sc.smartcommunitybackend.dto.request.ProductListRequest;
 import org.sc.smartcommunitybackend.dto.request.ProductRequest;
@@ -19,7 +21,7 @@ import java.util.List;
 
 @RestController("admin-MallController")
 @RequestMapping("/admin/products")
-@Tag(name = "管理端-商品接口")
+@Tag(name = "商品接口")
 @Slf4j
 public class MallController {
     @Resource
@@ -46,21 +48,11 @@ public class MallController {
         return storeProductService.queryList(storeListRequest);
     }
 
+//    @RequireRole(value = {"ROLE_SUPER_ADMIN", "ROLE_MERCHANT_ADMIN"}, logical = Logical.OR)
+    @RequirePermission("mall:create")
     @Operation(summary = "新增商品")
     @PostMapping
     public void add(@RequestBody ProductRequest productRequest) {
         productService.add(productRequest);
-    }
-
-    @Operation(summary = "修改商品")
-    @PutMapping("/{productId}")
-    public Result<Long> update(@PathVariable Long productId, @RequestBody ProductRequest productRequest) {
-        productService.updateProduct(productId, productRequest);
-        return Result.success(productId);
-    }
-    @Operation(summary = "删除商品")
-    @DeleteMapping("/{productId}")
-    public Result<Long> delete(@PathVariable Long productId) {
-        return Result.success(productService.delete(productId));
     }
 }

@@ -73,6 +73,16 @@ public class UserContextUtil {
     }
 
     /**
+     * 获取当前登录用户ID（可为null）
+     * 与getCurrentUserId()相同，但方法名更明确表示可能返回null
+     *
+     * @return 用户ID，如果未登录返回null
+     */
+    public static Long getCurrentUserIdOrNull() {
+        return getCurrentUserId();
+    }
+
+    /**
      * 检查当前是否已登录
      *
      * @return true-已登录，false-未登录
