@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
+import org.sc.smartcommunitybackend.domain.Product;
+import org.sc.smartcommunitybackend.domain.ProductCollect;
 import org.sc.smartcommunitybackend.domain.Store;
 import org.sc.smartcommunitybackend.domain.StoreProduct;
 import org.sc.smartcommunitybackend.dto.request.StoreListRequest;
@@ -31,6 +33,29 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductMapper, Sto
     implements StoreProductService{
     @Resource
     private StoreService storeService;
+
+
+    /**
+     * 根据商品ID、门店ID查询门店商品
+     */
+    @Override
+    public StoreProduct getStoreProductById(Long productId, Long storeId) {
+        log.info("根据商品ID、门店ID查询门店商品参数：{}", productId, storeId);
+        if(productId == null && productId<=0){
+            throw new RuntimeException("商品ID不能为空");
+        }
+        if(storeId == null && storeId<=0){
+            throw new RuntimeException("门店ID不能为空");
+        }
+        List<StoreProduct> list = lambdaQuery().eq(StoreProduct::getProduct_id, productId)
+                .eq(StoreProduct::getStore_id, storeId)
+                .list();
+        if (list == null || list.isEmpty() || list.size()<=0){
+            throw new RuntimeException("门店商品不存在");
+        }
+        StoreProduct storeProduct = list.get(0);
+        return storeProduct;
+    }
 
 
     /**
@@ -166,27 +191,8 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductMapper, Sto
         }
         return update;
     }
-    /**
-     * 根据商品ID、门店ID查询门店商品
-     */
-    @Override
-    public StoreProduct queryStoreProductByProductIdAndStoreId(Long productId, Long storeId) {
-        log.info("根据商品ID、门店ID查询门店商品参数：{}", productId, storeId);
-        if(productId == null && productId<=0){
-            throw new RuntimeException("商品ID不能为空");
-        }
-        if(storeId == null && storeId<=0){
-            throw new RuntimeException("门店ID不能为空");
-        }
-        List<StoreProduct> list = lambdaQuery().eq(StoreProduct::getProduct_id, productId)
-                .eq(StoreProduct::getStore_id, storeId)
-                .list();
-        if (list == null || list.isEmpty() || list.size()<=0){
-            throw new RuntimeException("门店商品不存在");
-        }
-        StoreProduct storeProduct = list.get(0);
-        return storeProduct;
-    }
+
+
 }
 
 
