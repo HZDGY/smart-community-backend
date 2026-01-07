@@ -36,6 +36,29 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductMapper, Sto
 
 
     /**
+     * 根据商品ID、门店ID查询门店商品
+     */
+    @Override
+    public StoreProduct getStoreProductById(Long productId, Long storeId) {
+        log.info("根据商品ID、门店ID查询门店商品参数：{}", productId, storeId);
+        if(productId == null && productId<=0){
+            throw new RuntimeException("商品ID不能为空");
+        }
+        if(storeId == null && storeId<=0){
+            throw new RuntimeException("门店ID不能为空");
+        }
+        List<StoreProduct> list = lambdaQuery().eq(StoreProduct::getProduct_id, productId)
+                .eq(StoreProduct::getStore_id, storeId)
+                .list();
+        if (list == null || list.isEmpty() || list.size()<=0){
+            throw new RuntimeException("门店商品不存在");
+        }
+        StoreProduct storeProduct = list.get(0);
+        return storeProduct;
+    }
+
+
+    /**
      * 查询商品可自提门店列表
      *
      * @param storeListRequest
@@ -168,6 +191,8 @@ public class StoreProductServiceImpl extends ServiceImpl<StoreProductMapper, Sto
         }
         return update;
     }
+
+
 }
 
 

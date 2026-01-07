@@ -45,10 +45,13 @@ public class UnifiedOrderServiceImpl implements UnifiedOrderService {
     
     @Autowired
     private ProductService productService;
-    
+
+    @Autowired
+    private StoreProductService storeProductService;
+
     @Autowired
     private StoreService storeService;
-    
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public OrderDetailVO createProductOrder(Long userId, CreateProductOrderRequest request) {
@@ -72,17 +75,20 @@ public class UnifiedOrderServiceImpl implements UnifiedOrderService {
         List<OrderProduct> orderProducts = new ArrayList<>();
         
         for (ShoppingCart cartItem : cartItems) {
+
             Product product = productService.getById(cartItem.getProduct_id());
-            if (product == null) {
+            StoreProduct storeProduct = storeProductService.getStoreProductById(cartItem.getProduct_id(), cartItem.getStore_id());
+
+            if (storeProduct == null) {
                 throw new BusinessException("商品不存在: " + cartItem.getProduct_id());
             }
             
-            if (product.getStatus() != 1) {
+            if (storeProduct.getStatus() != 1) {
                 throw new BusinessException("商品已下架: " + product.getProduct_name());
             }
             
-            if (product.getStock() < cartItem.getQuantity()) {
-                throw new BusinessException("商品库存不足: " + product.getProduct_name());
+            if (storeProduct.getStock() < cartItem.getQuantity()) {
+                throw new BusinessException("门店商品库存不足: " + product.getProduct_name());
             }
             
             BigDecimal subtotal = product.getPrice().multiply(new BigDecimal(cartItem.getQuantity()));
@@ -296,6 +302,7 @@ public class UnifiedOrderServiceImpl implements UnifiedOrderService {
             vo.setPaymentMethodDesc(getPaymentMethodDesc(order.getPaymentMethod()));
             vo.setDescription(order.getDescription());
             vo.setCreateTime(order.getCreateTime());
+            vo.setExpireTime(order.getExpireTime());
             
             // 如果是商品订单，查询商品数量和门店
             if (OrderType.PRODUCT.getCode().equals(order.getOrderType())) {
