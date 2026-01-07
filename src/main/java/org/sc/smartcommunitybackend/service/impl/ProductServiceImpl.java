@@ -254,6 +254,7 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
             throw new RuntimeException("商品封面图不能为空");
         }
         status = status == null ? ProductConstant.STATUS_STR_OFF_SALE : status;
+
         if(!ProductConstant.STATUS_STR_OFF_SALE.equals(status) && !ProductConstant.STATUS_STR_ON_SALE.equals(status)){
             throw new RuntimeException("商品状态错误");
         }
@@ -268,12 +269,13 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         if(!b){
             throw new RuntimeException("添加商品失败");
         }
-        // 保存商品到Redis
-        String redisKey =PRODUCT;
-        String key = String.format(PRODUCT_INFO, product.getProduct_id()%10);
+//        // 保存商品到Redis
+//        String redisKey =PRODUCT;
+//        String key = String.format(PRODUCT_INFO, product.getProduct_id()%10);
 //        redisTemplate.opsForHash().put(redisKey, key, product);
 //        redisTemplate.expire(redisKey, 36000, TimeUnit.SECONDS); // 设置36000秒过期时间,10天
-        redisUtil.hset(redisKey, key, product, 36000);
+//        redisUtil.hset(redisKey, key, product, 36000);
+//        log.info("商品保存到Redis成功");
     }
 
     /**

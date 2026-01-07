@@ -25,4 +25,6 @@ public interface StoreProductService extends IService<StoreProduct> {
     boolean updateStoreProductStatus(Long storeProductId, StoreProductStatusRequest status);
 
     boolean updateStoreProductStock(Long storeProductId, StoreProductStockRequest stock);
+
+    StoreProduct queryStoreProductByProductIdAndStoreId(Long productId, Long storeId);
 }
