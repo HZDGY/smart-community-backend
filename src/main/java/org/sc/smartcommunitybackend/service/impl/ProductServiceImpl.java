@@ -1,6 +1,7 @@
 package org.sc.smartcommunitybackend.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -19,15 +20,21 @@ import org.sc.smartcommunitybackend.service.ProductCollectService;
 import org.sc.smartcommunitybackend.service.ProductService;
 import org.sc.smartcommunitybackend.mapper.ProductMapper;
 import org.sc.smartcommunitybackend.service.StoreProductService;
+import org.sc.smartcommunitybackend.util.RedisUtil;
 import org.sc.smartcommunitybackend.util.UserContextUtil;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+
+import static org.sc.smartcommunitybackend.constant.RedisKeyConstant.PRODUCT;
+import static org.sc.smartcommunitybackend.constant.RedisKeyConstant.PRODUCT_INFO;
 
 /**
 * @author 吴展德
@@ -38,6 +45,10 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
     implements ProductService{
+    @Resource
+    private RedisTemplate redisTemplate;
+    @Resource
+    private RedisUtil redisUtil;
 
     @Resource
     private StoreProductService storeProductService;
@@ -257,6 +268,12 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         if(!b){
             throw new RuntimeException("添加商品失败");
         }
+        // 保存商品到Redis
+        String redisKey =PRODUCT;
+        String key = String.format(PRODUCT_INFO, product.getProduct_id()%10);
+//        redisTemplate.opsForHash().put(redisKey, key, product);
+//        redisTemplate.expire(redisKey, 36000, TimeUnit.SECONDS); // 设置36000秒过期时间,10天
+        redisUtil.hset(redisKey, key, product, 36000);
     }
 
     /**
