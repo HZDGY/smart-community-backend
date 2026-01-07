@@ -3,6 +3,8 @@ package org.sc.smartcommunitybackend.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import org.sc.smartcommunitybackend.domain.MockPaymentRecord;
 import org.sc.smartcommunitybackend.domain.PaymentOrder;
+import org.sc.smartcommunitybackend.domain.PropertyFeePayment;
+import org.sc.smartcommunitybackend.domain.WalletTransaction;
 import org.sc.smartcommunitybackend.dto.response.PaymentResponse;
 import org.sc.smartcommunitybackend.enums.OrderType;
 import org.sc.smartcommunitybackend.enums.PaymentMethod;
@@ -40,6 +42,9 @@ public class PaymentServiceImpl implements PaymentService {
     
     @Autowired
     private WalletService walletService;
+    
+    @Autowired
+    private PropertyFeeService propertyFeeService;
     
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -189,6 +194,7 @@ public class PaymentServiceImpl implements PaymentService {
             logger.info("模拟支付失败：订单号 {}", orderNo);
         }
         
+        logger.info("========== 支付回调方法即将返回，事务即将提交 ==========");
         return true;
     }
     
@@ -202,8 +208,62 @@ public class PaymentServiceImpl implements PaymentService {
             logger.info("充值成功：用户 {}，金额 {}", order.getUserId(), order.getAmount());
             
         } else if (OrderType.PROPERTY_FEE.getCode().equals(order.getOrderType())) {
-            // 物业费支付成功的处理在PropertyFeeService中完成
-            logger.info("物业费支付成功：订单号 {}", order.getOrderNo());
+            // 物业费支付成功的处理
+            logger.info("=== 物业费支付成功处理开始 ===");
+            logger.info("订单号: {}", order.getOrderNo());
+            logger.info("支付方式: {}", order.getPaymentMethod());
+            logger.info("用户ID: {}", order.getUserId());
+            logger.info("账单ID: {}", order.getRelatedId());
+            logger.info("金额: {}", order.getAmount());
+            
+            // relatedId 存储的是账单ID (billId)
+            if (order.getRelatedId() == null) {
+                logger.error("物业费订单缺少关联账单ID：订单号 {}", order.getOrderNo());
+                throw new BusinessException("物业费订单缺少关联账单ID");
+            }
+            
+            try {
+                // 如果是钱包支付，扣除钱包余额
+                String paymentMethod = order.getPaymentMethod();
+                logger.info("检查支付方式: paymentMethod=[{}], WALLET=[{}], equals={}", 
+                    paymentMethod, PaymentMethod.WALLET.name(), 
+                    PaymentMethod.WALLET.name().equals(paymentMethod));
+                    
+                if ("WALLET".equals(paymentMethod) || PaymentMethod.WALLET.name().equals(paymentMethod)) {
+                    logger.info("===== 开始扣除钱包余额 =====");
+                    logger.info("用户ID: {}, 金额: {}, 订单号: {}", order.getUserId(), order.getAmount(), order.getOrderNo());
+                    
+                    WalletTransaction transaction = walletService.payment(
+                        order.getUserId(),
+                        order.getAmount(),
+                        order.getOrderNo(),
+                        "缴纳物业费"
+                    );
+                    
+                    logger.info("===== 钱包扣款成功 =====");
+                    logger.info("交易ID: {}, 交易号: {}", transaction.getTransactionId(), transaction.getTransactionNo());
+                } else {
+                    logger.info("非钱包支付，跳过钱包扣款，当前支付方式: {}", paymentMethod);
+                }
+                
+                // 调用物业费服务处理第三方支付成功（更新账单状态）
+                logger.info("开始更新物业费账单状态...");
+                PropertyFeePayment payment = propertyFeeService.handleThirdPartyPaymentSuccess(
+                    order.getUserId(),
+                    order.getRelatedId(), // billId
+                    order.getAmount(),
+                    order.getPaymentMethod(),
+                    order.getOrderNo()
+                );
+                logger.info("物业费账单更新成功，缴费记录ID: {}", payment.getPaymentId());
+                
+                logger.info("=== 物业费支付处理完成：用户 {}，账单 {}，金额 {} ===", 
+                    order.getUserId(), order.getRelatedId(), order.getAmount());
+                    
+            } catch (Exception e) {
+                logger.error("物业费支付处理失败：订单号 {}，错误详情：", order.getOrderNo(), e);
+                throw new BusinessException("物业费支付处理失败：" + e.getMessage());
+            }
         }
     }
     

@@ -18,8 +18,7 @@ public class SysPermission {
     /**
      * 权限ID
      */
-    @TableId(type = IdType.AUTO)
-    @TableField("permission_id")
+    @TableId(value = "permission_id", type = IdType.AUTO)
     private Long permissionId;
 
     /**

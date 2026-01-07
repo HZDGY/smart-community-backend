@@ -45,7 +45,7 @@ public class WalletController extends BaseController {
     }
     
     @PostMapping("/recharge")
-    @Operation(summary = "充值", description = "创建充值订单")
+    @Operation(summary = "充值", description = "创建充值订单并发起支付（便捷接口，等同于 /payment/create-and-pay）")
 //    @RequirePermission("wallet:recharge")
     public Result<PaymentResponse> recharge(
             @Parameter(description = "充值请求", required = true)

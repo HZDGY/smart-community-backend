@@ -5,11 +5,15 @@
 <mapper namespace="org.sc.smartcommunitybackend.mapper.UserWalletMapper">
 
     <resultMap id="BaseResultMap" type="org.sc.smartcommunitybackend.domain.UserWallet">
-            <id property="wallet_id" column="wallet_id" />
-            <result property="user_id" column="user_id" />
+            <id property="walletId" column="wallet_id" />
+            <result property="userId" column="user_id" />
             <result property="balance" column="balance" />
-            <result property="create_time" column="create_time" />
-            <result property="update_time" column="update_time" />
+            <result property="frozenAmount" column="frozen_amount" />
+            <result property="totalRecharge" column="total_recharge" />
+            <result property="totalExpense" column="total_expense" />
+            <result property="status" column="status" />
+            <result property="createTime" column="create_time" />
+            <result property="updateTime" column="update_time" />
     </resultMap>
 
     <sql id="Base_Column_List">

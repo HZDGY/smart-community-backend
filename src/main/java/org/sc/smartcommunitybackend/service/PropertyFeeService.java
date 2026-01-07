@@ -80,4 +80,17 @@ public interface PropertyFeeService {
      * @return 总数
      */
     Long getBillCount(Long userId, Integer status);
+    
+    /**
+     * 处理第三方支付成功后的账单更新（支付宝/微信支付回调使用）
+     * 
+     * @param userId 用户ID
+     * @param billId 账单ID
+     * @param amount 缴费金额
+     * @param paymentMethod 支付方式
+     * @param orderNo 支付订单号
+     * @return 缴费记录
+     */
+    PropertyFeePayment handleThirdPartyPaymentSuccess(Long userId, Long billId, BigDecimal amount, 
+                                                     String paymentMethod, String orderNo);
 }
