@@ -10,12 +10,14 @@
             <result property="area_id" column="area_id" />
             <result property="address" column="address" />
             <result property="business_hours" column="business_hours" />
+            <result property="contact_phone" column="contact_phone" />
+            <result property="status" column="status" />
             <result property="create_time" column="create_time" />
             <result property="update_time" column="update_time" />
     </resultMap>
 
     <sql id="Base_Column_List">
-        store_id,store_name,area_id,address,business_hours,create_time,
+        store_id,store_name,area_id,address,business_hours,contact_phone,status,create_time,
         update_time
     </sql>
 </mapper>

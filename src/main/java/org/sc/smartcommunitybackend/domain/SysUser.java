@@ -17,8 +17,7 @@ public class SysUser {
     /**
      * 用户ID
      */
-    @TableId(type = IdType.AUTO)
-    @TableField("user_id")
+    @TableId(value = "user_id", type = IdType.AUTO)
     private Long userId;
 
     /**

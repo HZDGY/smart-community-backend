@@ -66,16 +66,82 @@ public class ShoppingCartServiceImpl extends ServiceImpl<ShoppingCartMapper, Sho
         if (quantity <= 0) {
             throw new RuntimeException("商品数量不能小于0");
         }
-        ShoppingCart shoppingCart = new ShoppingCart();
+        
+        // 1. 验证门店是否存在
+        Store store = storeService.getById(storeId);
+        if (store == null) {
+            log.error("门店不存在：storeId={}", storeId);
+            throw new RuntimeException("门店不存在，请选择有效的门店");
+        }
+        
+        // 2. 验证商品是否存在
+        Product product = productService.getById(productId);
+        if (product == null) {
+            log.error("商品不存在：productId={}", productId);
+            throw new RuntimeException("商品不存在");
+        }
+        
+        // 3. 验证该门店是否有该商品
+        StoreProduct storeProduct = storeProductService.getOne(
+            new QueryWrapper<StoreProduct>()
+                .eq("store_id", storeId)
+                .eq("product_id", productId)
+        );
+        if (storeProduct == null) {
+            log.error("该门店没有该商品：storeId={}, productId={}", storeId, productId);
+            throw new RuntimeException("该门店暂无此商品");
+        }
+        
+        // 4. 验证库存是否充足
+        if (storeProduct.getStock() == null || storeProduct.getStock() < quantity) {
+            log.error("库存不足：storeId={}, productId={}, 需要数量={}, 当前库存={}", 
+                    storeId, productId, quantity, storeProduct.getStock());
+            throw new RuntimeException("商品库存不足");
+        }
+        
         Long currentUserId = UserContextUtil.getCurrentUserId();
-        shoppingCart.setUser_id(currentUserId);
-        shoppingCart.setProduct_id(productId);
-        shoppingCart.setStore_id(storeId);
-        shoppingCart.setQuantity(quantity);
-        shoppingCart.setCreate_time(DateTime.now());
-        int insert = baseMapper.insert(shoppingCart);
-        if (insert <= 0) {
-            throw new RuntimeException("添加商品到购物车失败");
+        
+        // 5. 检查购物车中是否已存在该商品（同一用户、同一商品、同一门店）
+        ShoppingCart existingCart = lambdaQuery()
+                .eq(ShoppingCart::getUser_id, currentUserId)
+                .eq(ShoppingCart::getProduct_id, productId)
+                .eq(ShoppingCart::getStore_id, storeId)
+                .one();
+        
+        if (existingCart != null) {
+            // 如果已存在，更新数量（累加）
+            log.info("购物车中已存在该商品，更新数量：cartId={}, 原数量={}, 新增数量={}", 
+                    existingCart.getCart_id(), existingCart.getQuantity(), quantity);
+            Integer newQuantity = existingCart.getQuantity() + quantity;
+            
+            // 验证累加后的数量是否超过库存
+            if (newQuantity > storeProduct.getStock()) {
+                log.error("累加后数量超过库存：需要数量={}, 当前库存={}", newQuantity, storeProduct.getStock());
+                throw new RuntimeException("购物车数量加上本次添加数量超过库存，当前库存：" + storeProduct.getStock());
+            }
+            
+            boolean updated = lambdaUpdate()
+                    .eq(ShoppingCart::getCart_id, existingCart.getCart_id())
+                    .set(ShoppingCart::getQuantity, newQuantity)
+                    .update();
+            if (!updated) {
+                throw new RuntimeException("更新购物车商品数量失败");
+            }
+            log.info("购物车商品数量更新成功，新数量：{}", newQuantity);
+        } else {
+            // 如果不存在，插入新记录
+            log.info("购物车中不存在该商品，插入新记录");
+            ShoppingCart shoppingCart = new ShoppingCart();
+            shoppingCart.setUser_id(currentUserId);
+            shoppingCart.setProduct_id(productId);
+            shoppingCart.setStore_id(storeId);
+            shoppingCart.setQuantity(quantity);
+            shoppingCart.setCreate_time(DateTime.now());
+            int insert = baseMapper.insert(shoppingCart);
+            if (insert <= 0) {
+                throw new RuntimeException("添加商品到购物车失败");
+            }
+            log.info("商品添加到购物车成功，cartId={}", shoppingCart.getCart_id());
         }
     }
 

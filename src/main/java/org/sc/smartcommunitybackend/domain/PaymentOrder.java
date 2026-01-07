@@ -99,4 +99,22 @@ public class PaymentOrder {
      */
     @TableField("update_time")
     private Date updateTime;
+    
+    /**
+     * 取货门店ID（商品订单）
+     */
+    @TableField("store_id")
+    private Long storeId;
+    
+    /**
+     * 取货时间
+     */
+    @TableField("pick_up_time")
+    private Date pickUpTime;
+    
+    /**
+     * 完成时间
+     */
+    @TableField("finish_time")
+    private Date finishTime;
 }

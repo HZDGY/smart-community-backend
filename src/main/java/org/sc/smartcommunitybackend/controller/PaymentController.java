@@ -92,12 +92,26 @@ public class PaymentController extends BaseController {
         return success("订单已取消", null);
     }
     
+    @Autowired
+    private org.sc.smartcommunitybackend.service.WalletService walletService;
+    
     @PostMapping("/mock/callback/{orderNo}")
     @Operation(summary = "模拟支付回调", description = "模拟第三方支付回调（仅用于开发测试）")
     public Result<Void> mockPaymentCallback(
             @Parameter(description = "订单号") @PathVariable String orderNo,
             @Parameter(description = "是否成功") @RequestParam(defaultValue = "true") Boolean success) {
+        
+        // 记录回调前的余额
+        Long userId = UserContextUtil.getCurrentUserId();
+        org.sc.smartcommunitybackend.domain.UserWallet walletBefore = walletService.getWalletInfo(userId);
+        org.slf4j.LoggerFactory.getLogger(getClass()).info("=== Controller: 回调前钱包余额: {} ===", walletBefore.getBalance());
+        
         paymentService.mockPaymentCallback(orderNo, success);
+        
+        // 记录回调后的余额
+        org.sc.smartcommunitybackend.domain.UserWallet walletAfter = walletService.getWalletInfo(userId);
+        org.slf4j.LoggerFactory.getLogger(getClass()).info("=== Controller: 回调后钱包余额: {} ===", walletAfter.getBalance());
+        
         return success("模拟回调成功", null);
     }
 }

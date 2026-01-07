@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -201,6 +202,76 @@ public class PropertyFeeServiceImpl implements PropertyFeeService {
         
         Page<PropertyFeePayment> result = paymentMapper.selectPage(pageParam, wrapper);
         return result.getRecords();
+    }
+    
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public PropertyFeePayment handleThirdPartyPaymentSuccess(Long userId, Long billId, BigDecimal amount, 
+                                                            String paymentMethod, String orderNo) {
+        // 查询账单
+        PropertyFeeBill bill = billMapper.selectById(billId);
+        if (bill == null) {
+            throw new BusinessException("账单不存在");
+        }
+        
+        // 验证账单所属用户
+        if (!bill.getUserId().equals(userId)) {
+            throw new BusinessException("无权操作此账单");
+        }
+        
+        // 验证账单状态
+        if (bill.getStatus().equals(BillStatus.PAID.getCode())) {
+            logger.warn("账单已缴清，跳过处理：账单ID {}", billId);
+            // 账单已缴清，查询已有的缴费记录返回
+            LambdaQueryWrapper<PropertyFeePayment> wrapper = new LambdaQueryWrapper<>();
+            wrapper.eq(PropertyFeePayment::getBillId, billId)
+                   .eq(PropertyFeePayment::getAmount, amount)
+                   .orderByDesc(PropertyFeePayment::getCreateTime)
+                   .last("LIMIT 1");
+            return paymentMapper.selectOne(wrapper);
+        }
+        
+        // 验证缴费金额
+        BigDecimal remainingAmount = bill.getTotalAmount().subtract(bill.getPaidAmount());
+        if (amount.compareTo(remainingAmount) > 0) {
+            throw new BusinessException("缴费金额超过应缴金额");
+        }
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new BusinessException("缴费金额必须大于0");
+        }
+        
+        // 更新账单状态
+        BigDecimal newPaidAmount = bill.getPaidAmount().add(amount);
+        bill.setPaidAmount(newPaidAmount);
+        
+        if (newPaidAmount.compareTo(bill.getTotalAmount()) >= 0) {
+            // 已缴清
+            bill.setStatus(BillStatus.PAID.getCode());
+            bill.setPaidTime(new Date());
+        } else {
+            // 部分缴纳
+            bill.setStatus(BillStatus.PARTIAL.getCode());
+        }
+        
+        bill.setUpdateTime(new Date());
+        billMapper.updateById(bill);
+        
+        // 创建缴费记录
+        PropertyFeePayment payment = new PropertyFeePayment();
+        payment.setPaymentNo(orderNo); // 使用支付订单号
+        payment.setBillId(billId);
+        payment.setUserId(userId);
+        payment.setAmount(amount);
+        payment.setPaymentMethod(paymentMethod);
+        payment.setStatus(1); // 成功
+        payment.setCreateTime(new Date());
+        
+        paymentMapper.insert(payment);
+        
+        logger.info("第三方支付成功处理完成：用户 {}，账单 {}，金额 {}，支付方式 {}", 
+                userId, billId, amount, paymentMethod);
+        
+        return payment;
     }
     
     @Override

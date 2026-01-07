@@ -19,7 +19,10 @@ public interface UserWalletMapper extends BaseMapper<UserWallet> {
      * 根据用户ID查询钱包（加行锁）
      * 用于转账等需要并发控制的场景
      */
-    @Select("SELECT * FROM user_wallet WHERE user_id = #{userId} FOR UPDATE")
+    @Select("SELECT wallet_id AS walletId, user_id AS userId, balance, frozen_amount AS frozenAmount, " +
+            "total_recharge AS totalRecharge, total_expense AS totalExpense, status, " +
+            "create_time AS createTime, update_time AS updateTime " +
+            "FROM user_wallet WHERE user_id = #{userId} FOR UPDATE")
     UserWallet selectByUserIdForUpdate(@Param("userId") Long userId);
 }
 
