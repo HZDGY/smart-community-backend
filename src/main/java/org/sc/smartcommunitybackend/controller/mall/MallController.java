@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import lombok.extern.slf4j.Slf4j;
 import org.sc.smartcommunitybackend.common.Result;
+import org.sc.smartcommunitybackend.dto.request.AdminProductListRequest;
 import org.sc.smartcommunitybackend.dto.request.ProductListRequest;
 import org.sc.smartcommunitybackend.dto.request.StoreListRequest;
 import org.sc.smartcommunitybackend.dto.response.PageResult;
@@ -24,7 +25,7 @@ import static org.sc.smartcommunitybackend.common.Result.success;
 
 @RestController
 @RequestMapping("/mall")
-@Tag(name = "商品接口")
+@Tag(name = "用户端 商品接口")
 @Slf4j
 public class MallController {
     @Resource
@@ -35,8 +36,8 @@ public class MallController {
     private ProductCollectService productCollectService;
     @PostMapping("/list")
     @Operation(summary = "商品列表")
-    public Result<PageResult<ProductListItemVO>> list(@RequestBody ProductListRequest  productListRequest) {
-        PageResult<ProductListItemVO> productListItemVOPageResult = productService.queryList(productListRequest);
+    public Result<PageResult<ProductListItemVO>> list(@RequestBody AdminProductListRequest adminProductListRequest) {
+        PageResult<ProductListItemVO> productListItemVOPageResult = productService.queryList2(adminProductListRequest);
         return success(productListItemVOPageResult);
     }
 

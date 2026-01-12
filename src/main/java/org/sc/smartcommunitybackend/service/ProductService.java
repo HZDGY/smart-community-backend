@@ -18,6 +18,7 @@ import org.sc.smartcommunitybackend.dto.response.ProductListItemVO;
 public interface ProductService extends IService<Product> {
 
     PageResult<ProductListItemVO> queryList(ProductListRequest productListRequest);
+    PageResult<ProductListItemVO> queryList2(AdminProductListRequest adminProductListRequest);
 
     ProductDetailVO detail(Long productId);
 

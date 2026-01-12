@@ -223,6 +223,64 @@ public class ProductServiceImpl extends ServiceImpl<ProductMapper, Product>
         pageResult.setPages(resultPage.getPages());
         return pageResult;
     }
+    /**
+     * 商品列表2
+     *
+     * @param adminProductListRequest
+     * @return
+     */
+    @Override
+    public PageResult<ProductListItemVO> queryList2(AdminProductListRequest adminProductListRequest) {
+        log.info("商品列表查询参数：{}", adminProductListRequest);
+        Long categoryId = adminProductListRequest.getCategoryId();
+        String keyword = adminProductListRequest.getKeyword();
+        Integer pageNum = adminProductListRequest.getPageNum();
+        Integer pageSize = adminProductListRequest.getPageSize();
+        // 创建查询条件
+        LambdaQueryWrapper<Product> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(categoryId != null && categoryId > 0, Product::getCategory_id, categoryId);
+        queryWrapper.like(StringUtils.hasText(keyword), Product::getProduct_name, keyword);
+        queryWrapper.orderByDesc(Product::getCreate_time);
+        // 设置默认分页参数
+        pageNum = (pageNum != null && pageNum > 0) ? pageNum : 1;
+        pageSize = (pageSize != null && pageSize > 0) ? pageSize : 10;
+
+        // 创建分页对象
+        Page<Product> page = new Page<>(pageNum, pageSize);
+
+        // 执行分页查询
+        Page<Product> resultPage = this.page(page, queryWrapper);
+
+        log.info("分页查询结果：{}", resultPage);
+        // 转换结果：将 Product 转换为 ProductListItemVO
+        List<Product> records = resultPage.getRecords();
+        List<ProductListItemVO> voList = records.stream().map(product -> {
+            ProductListItemVO vo = new ProductListItemVO();
+            vo.setProductId(product.getProduct_id());
+            vo.setProductName(product.getProduct_name());
+            vo.setDescription(product.getDescription());
+            vo.setPrice(product.getPrice());
+            vo.setCoverImg(product.getCover_img());
+            // 设置是否已收藏（根据用户ID和商品ID查询收藏状态）
+            Long currentUserId = UserContextUtil.getCurrentUserId();
+            if (currentUserId != null && product.getProduct_id() != null) {
+                // 查询用户收藏状态
+                ProductCollect byUserIdAndProductId = productCollectService.getByUserIdAndProductId(currentUserId, product.getProduct_id());
+                vo.setIsCollected(byUserIdAndProductId != null);
+            } else {
+                vo.setIsCollected(false);
+            }
+            return vo;
+        }).collect(Collectors.toList());
+
+        // 创建分页结果对象
+        PageResult<ProductListItemVO> pageResult = new PageResult<>();
+        pageResult.setList(voList);
+        pageResult.setTotal(resultPage.getTotal());
+        pageResult.setPages(resultPage.getPages());
+
+        return pageResult;
+    }
 
     /**
      * 添加商品
